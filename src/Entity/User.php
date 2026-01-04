@@ -7,12 +7,15 @@ use App\Entity\Commande;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'Cet email est déjà utilisé')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -21,6 +24,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank(message: 'L\'email est requis')]
+    #[Assert\Email(message: 'L\'email doit être valide')]
     private ?string $email = null;
 
     /**
@@ -36,12 +41,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\NotBlank(message: 'Le nom est requis')]
+    #[Assert\Length(min: 2, minMessage: 'Le nom doit avoir au moins 2 caractères', max: 100)]
     private ?string $nom = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\NotBlank(message: 'Le prénom est requis')]
+    #[Assert\Length(min: 2, minMessage: 'Le prénom doit avoir au moins 2 caractères', max: 100)]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Regex(
+        pattern: '/^[\d\s+\-().]*$/',
+        message: 'Le numéro de téléphone n\'est pas valide'
+    )]
     private ?string $telephone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -58,6 +71,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Commande::class)]
     private Collection $commandes;
+
+    /**
+     * Propriété temporaire pour stocker le mot de passe en clair
+     * Utilisée uniquement lors de la création d'utilisateur
+     */
+    public ?string $plainPassword = null;
 
     public function __construct()
     {

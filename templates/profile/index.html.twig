@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil - MyBookstore{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card shadow mb-4">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-user-circle" style="font-size: 4rem; color: #007bff;"></i>
+                    </div>
+                    <h5 class="card-title">{{ user.prenom }} {{ user.nom }}</h5>
+                    <p class="text-muted small">{{ user.email }}</p>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ path('app_profile_edit') }}" class="btn btn-primary btn-sm">
+                            Modifier mes infos
+                        </a>
+                        <a href="{{ path('app_profile_change_password') }}" class="btn btn-secondary btn-sm">
+                            Changer mot de passe
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">Mes rôles</h6>
+                </div>
+                <div class="card-body">
+                    {% for role in user.roles %}
+                        <span class="badge bg-info mb-2">{{ role }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Mes Informations</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Prénom :</strong>
+                            <p>{{ user.prenom }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Nom :</strong>
+                            <p>{{ user.nom }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <strong>Email :</strong>
+                            <p>{{ user.email }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Téléphone :</strong>
+                            <p>{{ user.telephone ?? 'Non renseigné' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Ville :</strong>
+                            <p>{{ user.ville ?? 'Non renseignée' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <strong>Adresse :</strong>
+                            <p>{{ user.adresse ?? 'Non renseignée' }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Code postal :</strong>
+                            <p>{{ user.codePostal ?? 'Non renseigné' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if is_granted('ROLE_AGENT') %}
+            <div class="card shadow mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Accès Agent</h5>
+                </div>
+                <div class="card-body">
+                    <p>Vous avez accès au tableau de bord d'administration.</p>
+                    <a href="{{ path('admin_dashboard') }}" class="btn btn-success">
+                        Accéder au tableau de bord
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Mes Commandes</h5>
+                </div>
+                <div class="card-body">
+                    {% if user.commandes|length > 0 %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Commande</th>
+                                        <th>Date</th>
+                                        <th>Statut</th>
+                                        <th>Montant</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for commande in user.commandes %}
+                                    <tr>
+                                        <td>#{{ commande.id }}</td>
+                                        <td>{{ commande.dateCommande|date('d/m/Y') }}</td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ commande.statut }}</span>
+                                        </td>
+                                        <td>{{ commande.montantTotal }} €</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Vous n'avez pas encore de commande.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
