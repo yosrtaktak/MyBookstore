@@ -1,0 +1,22 @@
+# Configuration du bundle VichUploader pour la gestion des uploads de fichiers
+vich_uploader:
+    # Répertoire de base pour les métadonnées
+    db_driver: orm
+    
+    # Configuration des mappings pour les différents types d'uploads
+    mappings:
+        # Mapping pour les images de couverture des livres
+        livre_images:
+            # Générer automatiquement un nom unique pour chaque fichier uploadé
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            
+            # Répertoire de destination des fichiers uploadés
+            uri_prefix: /uploads/livres
+            upload_destination: '%kernel.project_dir%/public/uploads/livres'
+            
+            # Injecter automatiquement l'URL du fichier dans l'entité
+            inject_on_load: true
+            
+            # Supprimer automatiquement le fichier lors de la suppression de l'entité
+            delete_on_remove: true
+            delete_on_update: true

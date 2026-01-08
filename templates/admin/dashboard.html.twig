@@ -1,0 +1,116 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title %}Dashboard MyBookstore{% endblock %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h2 class="mb-4">
+            <i class="fas fa-chart-line"></i> Statistiques principales
+        </h2>
+    </div>
+</div>
+
+{# Cartes de statistiques #}
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm" style="border-left: 4px solid #3498db !important;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase small mb-1">📚 Livres</h6>
+                        <h2 class="mb-0 text-primary">{{ stats.total_livres }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-book fa-3x text-primary opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm" style="border-left: 4px solid #2ecc71 !important;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase small mb-1">🛒 Commandes</h6>
+                        <h2 class="mb-0 text-success">{{ stats.total_commandes }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-shopping-cart fa-3x text-success opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm" style="border-left: 4px solid #9b59b6 !important;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase small mb-1">👥 Utilisateurs</h6>
+                        <h2 class="mb-0 text-purple">{{ stats.total_utilisateurs }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-users fa-3x text-purple opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm" style="border-left: 4px solid #f39c12 !important;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase small mb-1">⏳ En attente</h6>
+                        <h2 class="mb-0 text-warning">{{ stats.commandes_en_attente }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-clock fa-3x text-warning opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle"></i> Bienvenue dans l'administration MyBookstore
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">
+                    Utilisez le menu de navigation à gauche pour gérer votre librairie en ligne.
+                </p>
+                
+                <div class="alert alert-info mb-0">
+                    <strong><i class="fas fa-lightbulb"></i> Astuce :</strong>
+                    {% if stats.commandes_en_attente > 0 %}
+                        Vous avez <strong>{{ stats.commandes_en_attente }}</strong> commande(s) en attente de traitement.
+                    {% else %}
+                        Toutes les commandes ont été traitées ! 🎉
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-purple {
+        color: #9b59b6 !important;
+    }
+    .opacity-25 {
+        opacity: 0.25 !important;
+    }
+</style>
+{% endblock %}
+

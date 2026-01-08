@@ -7,8 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: LivreRepository::class)]
+#[Vich\Uploadable]
 class Livre
 {
     #[ORM\Id]
@@ -45,6 +48,20 @@ class Livre
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageCouverture = null;
+
+    /**
+     * Champ non persisté utilisé pour l'upload du fichier image
+     * @var File|null
+     */
+    #[Vich\UploadableField(mapping: 'livre_images', fileNameProperty: 'imageCouverture')]
+    private ?File $imageFile = null;
+
+    /**
+     * Date de dernière mise à jour pour forcer le rechargement de l'image
+     * @var \DateTimeInterface|null
+     */
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'livres')]
     #[ORM\JoinColumn(nullable: false)]
@@ -203,6 +220,46 @@ class Livre
     public function setImageCouverture(?string $imageCouverture): static
     {
         $this->imageCouverture = $imageCouverture;
+
+        return $this;
+    }
+
+    /**
+     * Setter pour le fichier uploadé
+     * Met à jour automatiquement updatedAt pour forcer le rechargement de l'image
+     */
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if (null !== $imageFile) {
+            // Mise à jour de la date pour forcer Doctrine à détecter le changement
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    /**
+     * Getter pour le fichier uploadé
+     */
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * Getter pour la date de mise à jour
+     */
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * Setter pour la date de mise à jour
+     */
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
