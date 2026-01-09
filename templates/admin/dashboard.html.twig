@@ -6,7 +6,7 @@
 <div class="row">
     <div class="col-md-12 mb-4">
         <h2 class="mb-4">
-            <i class="fas fa-chart-line"></i> Statistiques principales
+            {{ ux_icon('tabler:chart-line') }} Statistiques principales
         </h2>
     </div>
 </div>
@@ -22,7 +22,7 @@
                         <h2 class="mb-0 text-primary">{{ stats.total_livres }}</h2>
                     </div>
                     <div>
-                        <i class="fas fa-book fa-3x text-primary opacity-25"></i>
+                        {{ ux_icon('tabler:book', {style: 'font-size: 3rem; opacity: 0.25;', class: 'text-primary'}) }}
                     </div>
                 </div>
             </div>
@@ -38,7 +38,7 @@
                         <h2 class="mb-0 text-success">{{ stats.total_commandes }}</h2>
                     </div>
                     <div>
-                        <i class="fas fa-shopping-cart fa-3x text-success opacity-25"></i>
+                        {{ ux_icon('tabler:shopping-cart', {style: 'font-size: 3rem; opacity: 0.25;', class: 'text-success'}) }}
                     </div>
                 </div>
             </div>
@@ -54,7 +54,7 @@
                         <h2 class="mb-0 text-purple">{{ stats.total_utilisateurs }}</h2>
                     </div>
                     <div>
-                        <i class="fas fa-users fa-3x text-purple opacity-25"></i>
+                        {{ ux_icon('tabler:users', {style: 'font-size: 3rem; opacity: 0.25;', class: 'text-purple'}) }}
                     </div>
                 </div>
             </div>
@@ -70,7 +70,7 @@
                         <h2 class="mb-0 text-warning">{{ stats.commandes_en_attente }}</h2>
                     </div>
                     <div>
-                        <i class="fas fa-clock fa-3x text-warning opacity-25"></i>
+                        {{ ux_icon('tabler:clock', {style: 'font-size: 3rem; opacity: 0.25;', class: 'text-warning'}) }}
                     </div>
                 </div>
             </div>
@@ -83,7 +83,7 @@
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-light">
                 <h5 class="mb-0">
-                    <i class="fas fa-info-circle"></i> Bienvenue dans l'administration MyBookstore
+                    {{ ux_icon('tabler:info-circle') }} Bienvenue dans l'administration MyBookstore
                 </h5>
             </div>
             <div class="card-body">
@@ -92,7 +92,7 @@
                 </p>
                 
                 <div class="alert alert-info mb-0">
-                    <strong><i class="fas fa-lightbulb"></i> Astuce :</strong>
+                    <strong>{{ ux_icon('tabler:bulb') }} Astuce :</strong>
                     {% if stats.commandes_en_attente > 0 %}
                         Vous avez <strong>{{ stats.commandes_en_attente }}</strong> commande(s) en attente de traitement.
                     {% else %}

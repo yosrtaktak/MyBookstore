@@ -1,87 +1,85 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-    <div class="container">
+    <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">
-            <i class="fas fa-book"></i> MyBookstore
+            {{ ux_icon('tabler:book') }} MyBookstore
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_catalogue') }}">Catalogue</a>
+                </li>
+            </ul>
+
+            {# Barre de recherche #}
+            <form class="d-flex me-3" action="{{ path('app_catalogue') }}" method="get">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="search" placeholder="Rechercher un livre..." 
+                           value="{{ app.request.query.get('search', '') }}" aria-label="Recherche">
+                    <button class="btn btn-outline-light" type="submit">
+                        {{ ux_icon('tabler:search') }}
+                    </button>
+                </div>
+            </form>
+
+            <ul class="navbar-nav">
                 {% if app.user %}
                     {# Utilisateur connecté #}
+                    {% if is_granted('ROLE_AGENT') %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
+                        <a class="nav-link" href="{{ path('admin_dashboard') }}">
+                            {{ ux_icon('tabler:dashboard') }} Administration
+                        </a>
                     </li>
+                    {% endif %}
+                    
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_catalogue') }}">Catalogue</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link position-relative" href="{{ path('app_panier') }}">
-                            <i class="fas fa-shopping-cart"></i> Panier
-                            {% set panier = app.session.get('panier', {}) %}
-                            {% if panier|length > 0 %}
+                        <a class="nav-link position-relative" href="{{ path('app_cart') }}">
+                            {{ ux_icon('tabler:shopping-cart') }}
+                            {% set cart = app.session.get('cart', {}) %}
+                            {% set cartCount = cart is not empty ? cart|reduce((carry, qty) => carry + qty, 0) : 0 %}
+                            {% if cartCount > 0 %}
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    {{ panier|length }}
+                                    {{ cartCount }}
                                 </span>
                             {% endif %}
                         </a>
                     </li>
                     
-                    {% if is_granted('ROLE_AGENT') %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('admin_dashboard') }}">
-                            <i class="fas fa-tachometer-alt"></i> Tableau de bord
-                        </a>
-                    </li>
-                    {% endif %}
-                    
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user"></i> {{ app.user.prenom }}
+                            {{ ux_icon('tabler:user') }} Bonjour {{ app.user.prenom }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item" href="{{ path('app_profile') }}">
-                                <i class="fas fa-user-circle"></i> Mon profil
+                                {{ ux_icon('tabler:user-circle') }} Mon profil
                             </a></li>
                             <li><a class="dropdown-item" href="{{ path('app_profile_change_password') }}">
-                                <i class="fas fa-lock"></i> Changer mot de passe
+                                {{ ux_icon('tabler:lock') }} Changer mot de passe
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ path('app_logout') }}">
-                                <i class="fas fa-sign-out-alt"></i> Déconnexion
+                                {{ ux_icon('tabler:logout') }} Déconnexion
                             </a></li>
                         </ul>
                     </li>
                 {% else %}
                     {# Utilisateur non connecté #}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_catalogue') }}">Catalogue</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link position-relative" href="{{ path('app_panier') }}">
-                            <i class="fas fa-shopping-cart"></i> Panier
-                            {% set panier = app.session.get('panier', {}) %}
-                            {% if panier|length > 0 %}
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    {{ panier|length }}
-                                </span>
-                            {% endif %}
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_login') }}">
-                            <i class="fas fa-sign-in-alt"></i> Connexion
+                            {{ ux_icon('tabler:login') }} Connexion
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_register') }}">
-                            <i class="fas fa-user-plus"></i> Inscription
+                            {{ ux_icon('tabler:user-plus') }} Inscription
                         </a>
                     </li>
                 {% endif %}

@@ -41,7 +41,7 @@ class LivreCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         // Action personnalisée pour voir la description dans un modal
-        $viewDescription = Action::new('viewDescription', 'Description', 'fa fa-eye')
+        $viewDescription = Action::new('viewDescription', 'Description', 'tabler:eye')
             ->linkToCrudAction('viewDescription')
             ->setCssClass('btn btn-info btn-sm');
 

@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos Livres - MyBookstore{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="mb-3">
+                {{ ux_icon('tabler:book') }} Nos Livres
+            </h1>
+            <p class="text-muted">Découvrez notre collection complète de livres.</p>
+        </div>
+    </div>
+
+    {% if livres|length > 0 %}
+        <div class="row">
+            {% for livre in livres %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm hover-effect" style="cursor: pointer; transition: transform 0.3s;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ livre.titre }}</h5>
+                        
+                        {% if livre.auteurs|length > 0 %}
+                            <p class="card-text small text-primary">
+                                <strong>Auteur(s):</strong>
+                                {% for auteur in livre.auteurs %}
+                                    {{ auteur.prenom }} {{ auteur.nom }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                        {% endif %}
+
+                        {% if livre.categories|length > 0 %}
+                            <p class="card-text small">
+                                <strong>Catégorie(s):</strong>
+                                {% for categorie in livre.categories %}
+                                    <span class="badge bg-secondary">{{ categorie.libelle }}</span>
+                                {% endfor %}
+                            </p>
+                        {% endif %}
+
+                        <p class="card-text text-muted small">
+                            {% if livre.editeur %}
+                                <strong>Éditeur:</strong> {{ livre.editeur.nomEditeur }}<br>
+                            {% endif %}
+                            <strong>ISBN:</strong> {{ livre.isbn }}<br>
+                            <strong>Pages:</strong> {{ livre.nbPages }}<br>
+                            {% if livre.langue %}
+                                <strong>Langue:</strong> {{ livre.langue }}
+                            {% endif %}
+                        </p>
+
+                        {% if livre.description %}
+                            <p class="card-text text-muted">{{ livre.description|slice(0, 100) }}...</p>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="h5 mb-0 text-primary">{{ livre.prix }} €</span>
+                            {% if livre.stock > 0 %}
+                                <span class="badge bg-success">En stock</span>
+                            {% else %}
+                                <span class="badge bg-danger">Rupture</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer border-0 bg-transparent">
+                        <a href="{{ path('app_book_show', {'id': livre.id}) }}" class="btn btn-primary btn-sm w-100">
+                            Voir les détails
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            {{ ux_icon('tabler:info-circle') }}
+            Aucun livre disponible pour le moment.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

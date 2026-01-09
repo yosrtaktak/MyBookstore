@@ -1,0 +1,254 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ livre.titre }} - MyBookstore{% endblock %}
+
+{% block content %}
+{# Fil d'Ariane (Breadcrumb) #}
+<nav aria-label="breadcrumb" class="bg-light py-3">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="{{ path('app_home') }}">{{ ux_icon('tabler:home') }} Accueil</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{{ path('app_catalogue') }}">Catalogue</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">{{ livre.titre|slice(0, 50) }}...</li>
+        </ol>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <div class="row">
+        {# Image et actions principales #}
+        <div class="col-md-4 mb-4">
+            <div class="sticky-top" style="top: 20px;">
+                {% if livre.imageCouverture %}
+                    <img src="{{ asset('uploads/livres/' ~ livre.imageCouverture) }}" 
+                         class="img-fluid rounded shadow-lg mb-3" 
+                         alt="{{ livre.titre }}"
+                         style="width: 100%; max-height: 600px; object-fit: contain;">
+                {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center rounded shadow-lg mb-3" 
+                         style="height: 500px;">
+                        {{ ux_icon('tabler:book', {style: 'font-size: 8rem; opacity: 0.3;'}) }}
+                    </div>
+                {% endif %}
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="text-primary fw-bold mb-0">{{ livre.prix }} €</h3>
+                            <span class="badge fs-6 bg-{{ livre.stock > 0 ? 'success' : 'danger' }}">
+                                {{ livre.stock > 0 ? 'En stock (' ~ livre.stock ~ ')' : 'Rupture de stock' }}
+                            </span>
+                        </div>
+
+                        {% if livre.stock > 0 %}
+                            {% if is_granted('ROLE_ABONNE') %}
+                                <form method="post" action="{{ path('app_cart_add', {id: livre.id}) }}">
+                                    <div class="mb-3">
+                                        <label for="quantity" class="form-label fw-bold">Quantité</label>
+                                        <select class="form-select form-select-lg" id="quantity" name="quantity" required>
+                                            {% for i in 1..min(10, livre.stock) %}
+                                                <option value="{{ i }}">{{ i }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        {% if livre.stock < 10 %}
+                                            <small class="text-muted">Maximum : {{ livre.stock }} disponible{{ livre.stock > 1 ? 's' : '' }}</small>
+                                        {% endif %}
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                                        {{ ux_icon('tabler:shopping-cart-plus') }} Ajouter au panier
+                                    </button>
+                                </form>
+                            {% else %}
+                                <a href="{{ path('app_login') }}" class="btn btn-outline-primary btn-lg w-100">
+                                    {{ ux_icon('tabler:login') }} Connectez-vous pour commander
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <button class="btn btn-secondary btn-lg w-100" disabled>
+                                {{ ux_icon('tabler:x') }} Indisponible
+                            </button>
+                        {% endif %}
+
+                        <a href="{{ path('app_catalogue') }}" class="btn btn-outline-secondary w-100 mt-2">
+                            {{ ux_icon('tabler:arrow-left') }} Retour au catalogue
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Informations détaillées #}
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold mb-3">{{ livre.titre }}</h1>
+
+            {# Auteurs #}
+            {% if livre.auteurs|length > 0 %}
+            <p class="lead text-muted mb-3">
+                {{ ux_icon('tabler:users') }}
+                Par 
+                {% for auteur in livre.auteurs %}
+                    <strong>{{ auteur.prenom }} {{ auteur.nom }}</strong>{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            {% endif %}
+
+            {# Catégories #}
+            {% if livre.categories|length > 0 %}
+            <div class="mb-4">
+                {% for categorie in livre.categories %}
+                    <a href="{{ path('app_catalogue', {categorie: categorie.id}) }}" 
+                       class="badge bg-primary text-decoration-none me-1 fs-6">
+                        {{ ux_icon('tabler:tag') }} {{ categorie.libelle }}
+                    </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <hr class="my-4">
+
+            {# Informations du livre #}
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <strong>{{ ux_icon('tabler:barcode') }} ISBN:</strong> {{ livre.isbn }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>{{ ux_icon('tabler:building') }} Éditeur:</strong> 
+                            <a href="{{ path('app_catalogue', {editeur: livre.editeur.id}) }}" class="text-decoration-none">
+                                {{ livre.editeur.nomEditeur }}
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <strong>{{ ux_icon('tabler:file-text') }} Pages:</strong> {{ livre.nbPages }}
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <strong>{{ ux_icon('tabler:world') }} Langue:</strong> {{ livre.langue }}
+                        </li>
+                        {% if livre.dateEdition %}
+                        <li class="mb-2">
+                            <strong>{{ ux_icon('tabler:calendar') }} Date d'édition:</strong> 
+                            {{ livre.dateEdition|date('d/m/Y') }}
+                        </li>
+                        {% endif %}
+                        <li class="mb-2">
+                            <strong>{{ ux_icon('tabler:books') }} Exemplaires:</strong> {{ livre.nbExemplaires }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            {# Description #}
+            {% if livre.description %}
+            <div class="card bg-light border-0 mb-4">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3">
+                        {{ ux_icon('tabler:book-2') }} Description
+                    </h5>
+                    <div class="card-text">
+                        {{ livre.description|nl2br }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {# Informations de livraison #}
+            <div class="card border-primary mb-4">
+                <div class="card-body">
+                    <h6 class="card-title fw-bold">
+                        {{ ux_icon('tabler:truck-delivery') }} Informations de livraison
+                    </h6>
+                    <ul class="mb-0">
+                        <li>Livraison gratuite dès 30€ d'achat</li>
+                        <li>Livraison en 2-3 jours ouvrés</li>
+                        <li>Retour gratuit sous 14 jours</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Section Livres Similaires #}
+    {% if livresSimilaires|length > 0 %}
+    <div class="mt-5 pt-5 border-top">
+        <h2 class="fw-bold mb-4">
+            {{ ux_icon('tabler:sparkles') }} Livres Similaires
+        </h2>
+        <p class="text-muted mb-4">Vous pourriez également être intéressé par ces livres</p>
+
+        <div class="row g-4">
+            {% for livreSimilaire in livresSimilaires %}
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card h-100 shadow-sm hover-lift">
+                    <a href="{{ path('app_book_show', {id: livreSimilaire.id}) }}" class="text-decoration-none">
+                        {% if livreSimilaire.imageCouverture %}
+                            <img src="{{ asset('uploads/livres/' ~ livreSimilaire.imageCouverture) }}" 
+                                 class="card-img-top" 
+                                 alt="{{ livreSimilaire.titre }}"
+                                 style="height: 250px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                 style="height: 250px;">
+                                {{ ux_icon('tabler:book', {style: 'font-size: 4rem; opacity: 0.3;'}) }}
+                            </div>
+                        {% endif %}
+                    </a>
+                    
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title fw-bold text-truncate" title="{{ livreSimilaire.titre }}">
+                            <a href="{{ path('app_book_show', {id: livreSimilaire.id}) }}" 
+                               class="text-dark text-decoration-none">
+                                {{ livreSimilaire.titre }}
+                            </a>
+                        </h6>
+                        
+                        <p class="card-text text-muted small mb-2">
+                            {% if livreSimilaire.auteurs|length > 0 %}
+                                {{ livreSimilaire.auteurs[0].prenom }} {{ livreSimilaire.auteurs[0].nom }}
+                            {% endif %}
+                        </p>
+
+                        <div class="mt-auto">
+                            <hr class="my-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h6 mb-0 text-primary fw-bold">{{ livreSimilaire.prix }} €</span>
+                                <span class="badge bg-{{ livreSimilaire.stock > 0 ? 'success' : 'danger' }}">
+                                    {{ livreSimilaire.stock > 0 ? 'En stock' : 'Rupture' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.hover-lift {
+    transition: all 0.3s ease;
+}
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15) !important;
+}
+.sticky-top {
+    position: sticky;
+}
+@media (max-width: 768px) {
+    .sticky-top {
+        position: relative !important;
+    }
+}
+</style>
+{% endblock %}

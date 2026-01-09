@@ -1,0 +1,125 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ livre.titre }} - MyBookstore{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <a href="{{ path('app_catalogue') }}" class="btn btn-outline-primary btn-sm">
+                {{ ux_icon('tabler:arrow-left') }} Retour au catalogue
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center p-4" style="background-color: #f8f9fa; height: 300px; display: flex; align-items: center; justify-content: center;">
+                    {% if livre.imageCouverture %}
+                        <img src="/uploads/{{ livre.imageCouverture }}" alt="{{ livre.titre }}" class="img-fluid" style="max-height: 280px;">
+                    {% else %}
+                        <div style="font-size: 3rem;">📖</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h1 class="card-title mb-3">{{ livre.titre }}</h1>
+
+                    {% if livre.auteurs|length > 0 %}
+                        <p class="card-text">
+                            <strong>Auteur(s) :</strong>
+                            {% for auteur in livre.auteurs %}
+                                <a href="#">{{ auteur.prenom }} {{ auteur.nom }}</a>{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+                    {% endif %}
+
+                    {% if livre.categories|length > 0 %}
+                        <p class="card-text">
+                            <strong>Catégorie(s) :</strong>
+                            {% for categorie in livre.categories %}
+                                <span class="badge bg-secondary">{{ categorie.libelle }}</span>
+                            {% endfor %}
+                        </p>
+                    {% endif %}
+
+                    {% if livre.editeur %}
+                        <p class="card-text">
+                            <strong>Éditeur :</strong> {{ livre.editeur.nomEditeur }}
+                            {% if livre.editeur.pays %}
+                                ({{ livre.editeur.pays }})
+                            {% endif %}
+                        </p>
+                    {% endif %}
+
+                    <hr>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="card-text">
+                                <strong>ISBN :</strong> {{ livre.isbn }}
+                            </p>
+                            <p class="card-text">
+                                <strong>Nombre de pages :</strong> {{ livre.nbPages }}
+                            </p>
+                            {% if livre.langue %}
+                                <p class="card-text">
+                                    <strong>Langue :</strong> {{ livre.langue }}
+                                </p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <p class="card-text">
+                                <strong>Date d'édition :</strong> 
+                                {% if livre.dateEdition %}
+                                    {{ livre.dateEdition|date('d/m/Y') }}
+                                {% else %}
+                                    Non renseignée
+                                {% endif %}
+                            </p>
+                            <p class="card-text">
+                                <strong>Stock :</strong> 
+                                {% if livre.stock > 0 %}
+                                    <span class="badge bg-success">{{ livre.stock }} exemplaire(s) en stock</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Rupture de stock</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if livre.description %}
+                        <hr>
+                        <h5>Description</h5>
+                        <p class="card-text">{{ livre.description }}</p>
+                    {% endif %}
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="text-primary mb-0">{{ livre.prix }} €</h3>
+                        </div>
+                        <div>
+                            {% if livre.stock > 0 %}
+                                <button class="btn btn-primary btn-lg">
+                                    {{ ux_icon('tabler:shopping-cart') }} Ajouter au panier
+                                </button>
+                            {% else %}
+                                <button class="btn btn-secondary btn-lg" disabled>
+                                    Rupture de stock
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

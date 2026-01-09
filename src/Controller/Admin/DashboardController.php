@@ -71,32 +71,32 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         // Lien vers le dashboard avec icône et badge de statistiques
-        yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home')
+        yield MenuItem::linkToDashboard('Dashboard', 'tabler:home')
             ->setBadge($this->commandeRepository->count(['statut' => 'EN_ATTENTE']), 'warning');
 
         // Section Catalogue
         yield MenuItem::section('Catalogue');
         
-        yield MenuItem::linkToCrud('Livres', 'fa fa-book', Livre::class)
+        yield MenuItem::linkToCrud('Livres', 'tabler:book', Livre::class)
             ->setBadge($this->livreRepository->count([]), 'info');
         
-        yield MenuItem::linkToCrud('Auteurs', 'fa fa-user-pen', Auteur::class);
+        yield MenuItem::linkToCrud('Auteurs', 'tabler:user-edit', Auteur::class);
         
-        yield MenuItem::linkToCrud('Éditeurs', 'fa fa-building', Editeur::class);
+        yield MenuItem::linkToCrud('Éditeurs', 'tabler:building', Editeur::class);
         
-        yield MenuItem::linkToCrud('Catégories', 'fa fa-tags', Categorie::class);
+        yield MenuItem::linkToCrud('Catégories', 'tabler:tags', Categorie::class);
 
         // Section Ventes
         yield MenuItem::section('Ventes');
         
-        yield MenuItem::linkToCrud('Commandes', 'fa fa-shopping-cart', Commande::class)
+        yield MenuItem::linkToCrud('Commandes', 'tabler:shopping-cart', Commande::class)
             ->setBadge($this->commandeRepository->count([]), 'success');
 
         // Section Utilisateurs (visible uniquement pour ROLE_ADMIN)
         yield MenuItem::section('👥 Utilisateurs')
             ->setPermission('ROLE_ADMIN');
         
-        yield MenuItem::linkToCrud('Utilisateurs', 'fa fa-users', User::class)
+        yield MenuItem::linkToCrud('Utilisateurs', 'tabler:users', User::class)
             ->setPermission('ROLE_ADMIN')
             ->setBadge($this->userRepository->count([]), 'primary');
 
@@ -104,10 +104,10 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::section();
 
         // Lien pour retourner sur le site public
-        yield MenuItem::linkToUrl('Retour au site', 'fa fa-arrow-left', '/');
+        yield MenuItem::linkToUrl('Retour au site', 'tabler:arrow-left', '/');
 
         // Lien pour se déconnecter
-        yield MenuItem::linkToLogout('Déconnexion', 'fa fa-sign-out-alt');
+        yield MenuItem::linkToLogout('Déconnexion', 'tabler:logout');
     }
 
     /**
@@ -125,7 +125,7 @@ class DashboardController extends AbstractDashboardController
             ->displayUserName(true)
             ->displayUserAvatar(false)
             ->addMenuItems([
-                MenuItem::linkToUrl('Mon profil', 'fa fa-user', '/profile'),
+                MenuItem::linkToUrl('Mon profil', 'tabler:user', '/profile'),
             ]);
     }
 }

@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Panier{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4">{{ ux_icon('tabler:shopping-cart') }} Mon Panier</h1>
+
+    {% if items is empty %}
+        <div class="alert alert-info">
+            {{ ux_icon('tabler:info-circle') }} Votre panier est vide.
+        </div>
+        <a href="{{ path('app_catalogue') }}" class="btn btn-primary">
+            {{ ux_icon('tabler:book') }} Continuer mes achats
+        </a>
+    {% else %}
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Livre</th>
+                            <th>Prix unitaire</th>
+                            <th>Quantité</th>
+                            <th>Sous-total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                            <tr>
+                                <td>
+                                    {% if item.livre.imageCouverture %}
+                                        <img src="{{ asset('uploads/livres/' ~ item.livre.imageCouverture) }}" 
+                                             alt="{{ item.livre.titre }}" 
+                                             style="width: 60px; height: auto;">
+                                    {% else %}
+                                        {{ ux_icon('tabler:book', {style: 'font-size: 3rem; opacity: 0.3;'}) }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong>{{ item.livre.titre }}</strong><br>
+                                    <small class="text-muted">
+                                        {% for auteur in item.livre.auteurs %}
+                                            {{ auteur.prenom }} {{ auteur.nom }}{% if not loop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </small>
+                                </td>
+                                <td>{{ item.livre.prix|number_format(2, ',', ' ') }} €</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ path('app_panier_update', {id: item.livre.id, action: 'decrease'}) }}" 
+                                           class="btn btn-sm btn-outline-secondary">
+                                            {{ ux_icon('tabler:minus') }}
+                                        </a>
+                                        <span class="btn btn-sm btn-light disabled">{{ item.quantite }}</span>
+                                        <a href="{{ path('app_panier_update', {id: item.livre.id, action: 'increase'}) }}" 
+                                           class="btn btn-sm btn-outline-secondary">
+                                            {{ ux_icon('tabler:plus') }}
+                                        </a>
+                                    </div>
+                                </td>
+                                <td><strong>{{ (item.livre.prix * item.quantite)|number_format(2, ',', ' ') }} €</strong></td>
+                                <td>
+                                    <a href="{{ path('app_panier_remove', {id: item.livre.id}) }}" 
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Êtes-vous sûr de vouloir retirer ce livre ?')">
+                                        {{ ux_icon('tabler:trash') }} Retirer
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-light">
+                            <td colspan="4" class="text-end"><strong>Total :</strong></td>
+                            <td colspan="2"><strong class="text-success">{{ total|number_format(2, ',', ' ') }} €</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex justify-content-between">
+            <div>
+                <a href="{{ path('app_catalogue') }}" class="btn btn-outline-primary">
+                    {{ ux_icon('tabler:arrow-left') }} Continuer mes achats
+                </a>
+                <a href="{{ path('app_panier_clear') }}" 
+                   class="btn btn-outline-danger"
+                   onclick="return confirm('Êtes-vous sûr de vouloir vider votre panier ?')">
+                    {{ ux_icon('tabler:trash-x') }} Vider le panier
+                </a>
+            </div>
+            <div>
+                {% if app.user %}
+                    <a href="{{ path('app_panier_valider') }}" class="btn btn-success btn-lg">
+                        {{ ux_icon('tabler:check') }} Valider ma commande
+                    </a>
+                {% else %}
+                    <a href="{{ path('app_login') }}" class="btn btn-warning btn-lg">
+                        {{ ux_icon('tabler:login') }} Se connecter pour commander
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

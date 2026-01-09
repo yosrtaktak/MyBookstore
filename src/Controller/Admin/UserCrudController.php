@@ -59,7 +59,7 @@ class UserCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         // Action personnalisée pour réinitialiser le mot de passe
-        $resetPassword = Action::new('resetPassword', 'Réinitialiser', 'fa fa-key')
+        $resetPassword = Action::new('resetPassword', 'Réinitialiser', 'tabler:key')
             ->linkToCrudAction('resetPassword')
             ->setCssClass('btn btn-warning btn-sm')
             ->displayIf(fn ($entity) => $entity instanceof User);

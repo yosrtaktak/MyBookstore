@@ -1,0 +1,202 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - MyBookstore{% endblock %}
+
+{% block content %}
+{# Hero Section #}
+<div class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-4 fw-bold">Bienvenue chez MyBookstore</h1>
+                <p class="lead">Votre librairie en ligne pour découvrir des milliers de livres passionnants. Trouvez votre prochaine lecture parmi notre vaste sélection.</p>
+                <div class="d-flex gap-2 mt-4">
+                    <a href="{{ path('app_catalogue') }}" class="btn btn-light btn-lg">
+                        {{ ux_icon('tabler:book-2') }} Découvrir le catalogue
+                    </a>
+                    {% if not app.user %}
+                        <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-lg">
+                            {{ ux_icon('tabler:user-plus') }} S'inscrire
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div style="font-size: 8rem;">📚</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Section des avantages #}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    {{ ux_icon('tabler:books', {style: 'font-size: 3rem; color: #007bff;'}) }}
+                    <h5 class="card-title mt-3 fw-bold">Vaste Sélection</h5>
+                    <p class="card-text text-muted">Des milliers de livres dans tous les genres : romans, sciences, histoire, jeunesse et plus encore.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    {{ ux_icon('tabler:truck-delivery', {style: 'font-size: 3rem; color: #007bff;'}) }}
+                    <h5 class="card-title mt-3 fw-bold">Livraison Rapide</h5>
+                    <p class="card-text text-muted">Recevez vos commandes rapidement et en toute sécurité partout en France.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    {{ ux_icon('tabler:headphones', {style: 'font-size: 3rem; color: #007bff;'}) }}
+                    <h5 class="card-title mt-3 fw-bold">Support Client</h5>
+                    <p class="card-text text-muted">Notre équipe est toujours disponible pour répondre à vos questions et vous assister.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Section Derniers Livres Ajoutés #}
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold">✨ Derniers Ajouts</h2>
+        <p class="lead text-muted">Découvrez nos derniers livres ajoutés à la collection</p>
+    </div>
+
+    <div class="row g-4">
+        {% for livre in derniersLivres %}
+        <div class="col-md-6 col-lg-4 col-xl-3">
+            <div class="card h-100 shadow-sm hover-lift">
+                {% if livre.imageCouverture %}
+                    <img src="{{ asset('uploads/livres/' ~ livre.imageCouverture) }}" 
+                         class="card-img-top" 
+                         alt="{{ livre.titre }}"
+                         style="height: 350px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                         style="height: 350px;">
+                        {{ ux_icon('tabler:book', {style: 'font-size: 5rem; opacity: 0.3;'}) }}
+                    </div>
+                {% endif %}
+                
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-bold text-truncate" title="{{ livre.titre }}">{{ livre.titre }}</h5>
+                    
+                    <p class="card-text text-muted small mb-2">
+                        {{ ux_icon('tabler:user') }}
+                        {% if livre.auteurs|length > 0 %}
+                            {% for auteur in livre.auteurs %}
+                                {{ auteur.prenom }} {{ auteur.nom }}{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <em>Auteur inconnu</em>
+                        {% endif %}
+                    </p>
+
+                    <div class="mt-auto">
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="h5 mb-0 text-primary fw-bold">{{ livre.prix }} €</span>
+                            <span class="badge bg-{{ livre.stock > 0 ? 'success' : 'danger' }}">
+                                {{ livre.stock > 0 ? 'En stock (' ~ livre.stock ~ ')' : 'Rupture' }}
+                            </span>
+                        </div>
+                        <a href="{{ path('app_book_show', {id: livre.id}) }}" 
+                           class="btn btn-outline-primary w-100">
+                            {{ ux_icon('tabler:eye') }} Voir détails
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                {{ ux_icon('tabler:info-circle') }} Aucun livre disponible pour le moment.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if derniersLivres|length > 0 %}
+    <div class="text-center mt-5">
+        <a href="{{ path('app_catalogue') }}" class="btn btn-primary btn-lg">
+            {{ ux_icon('tabler:arrow-right') }} Voir tous les livres du catalogue
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+{# Section Livres en Vedette #}
+{% if livresVedette|length > 0 %}
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">🌟 Livres en Vedette</h2>
+            <p class="lead text-muted">Notre sélection de livres populaires et incontournables</p>
+        </div>
+
+        <div class="row g-4">
+            {% for livre in livresVedette %}
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 shadow hover-lift border-primary" style="border-width: 2px;">
+                    {% if livre.imageCouverture %}
+                        <img src="{{ asset('uploads/livres/' ~ livre.imageCouverture) }}" 
+                             class="card-img-top" 
+                             alt="{{ livre.titre }}"
+                             style="height: 300px; object-fit: cover;">
+                    {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                             style="height: 300px;">
+                            {{ ux_icon('tabler:book', {style: 'font-size: 4rem; opacity: 0.3;'}) }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="card-body d-flex flex-column">
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-warning text-dark">
+                                {{ ux_icon('tabler:star-filled') }} Vedette
+                            </span>
+                        </div>
+                        
+                        <h5 class="card-title fw-bold text-truncate" title="{{ livre.titre }}">{{ livre.titre }}</h5>
+                        
+                        <p class="card-text text-muted small">
+                            {% if livre.auteurs|length > 0 %}
+                                Par {{ livre.auteurs[0].prenom }} {{ livre.auteurs[0].nom }}
+                            {% endif %}
+                        </p>
+
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="h5 mb-0 text-primary fw-bold">{{ livre.prix }} €</span>
+                            </div>
+                            <a href="{{ path('app_book_show', {id: livre.id}) }}" 
+                               class="btn btn-primary w-100">
+                                {{ ux_icon('tabler:shopping-cart') }} Découvrir
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+.hover-lift {
+    transition: all 0.3s ease;
+}
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important;
+}
+</style>
+{% endblock %}
