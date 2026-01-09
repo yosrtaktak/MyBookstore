@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ livre.titre }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .book-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .book-cover {
+            max-width: 200px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .description-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            line-height: 1.8;
+        }
+        .description-content strong {
+            color: #495057;
+        }
+        .description-content em {
+            font-style: italic;
+            color: #6c757d;
+        }
+        .description-content blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+            margin: 15px 0;
+            color: #495057;
+        }
+        .description-content ul, .description-content ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="book-header">
+            <h1 class="mb-0">📚 {{ livre.titre }}</h1>
+            <p class="mb-0 mt-2">
+                {% if livre.auteurs|length > 0 %}
+                    Par {{ livre.auteurs|map(a => a.nom ~ ' ' ~ a.prenom)|join(', ') }}
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="row">
+            {% if livre.imageCouverture %}
+            <div class="col-md-3 text-center mb-3">
+                <img src="{{ asset('uploads/livres/' ~ livre.imageCouverture) }}" 
+                     alt="{{ livre.titre }}" 
+                     class="book-cover img-fluid">
+            </div>
+            {% endif %}
+            
+            <div class="col-md-{{ livre.imageCouverture ? '9' : '12' }}">
+                <div class="description-content">
+                    <h4 class="mb-3">📖 Description</h4>
+                    {{ livre.description|raw }}
+                </div>
+
+                <div class="mt-3 p-3 bg-white rounded">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>ISBN:</strong> {{ livre.isbn }}</p>
+                            <p class="mb-1"><strong>Prix:</strong> {{ livre.prix|number_format(2, ',', ' ') }} €</p>
+                            <p class="mb-1"><strong>Stock:</strong> {{ livre.stock }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Langue:</strong> {{ livre.langue }}</p>
+                            <p class="mb-1"><strong>Pages:</strong> {{ livre.nbPages }}</p>
+                            <p class="mb-1"><strong>Éditeur:</strong> {{ livre.editeur.nomEditeur }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3 text-center">
+            <button onclick="window.close()" class="btn btn-secondary">Fermer</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

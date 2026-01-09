@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Form\ChangePasswordType;
 use App\Form\ProfileEditType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,6 +20,7 @@ class ProfileController extends AbstractController
     #[Route('', name: 'app_profile')]
     public function index(): Response
     {
+        /** @var User $user */
         $user = $this->getUser();
 
         return $this->render('profile/index.html.twig', [
@@ -29,6 +31,7 @@ class ProfileController extends AbstractController
     #[Route('/edit', name: 'app_profile_edit')]
     public function edit(Request $request, EntityManagerInterface $entityManager): Response
     {
+        /** @var User $user */
         $user = $this->getUser();
         $form = $this->createForm(ProfileEditType::class, $user);
         $form->handleRequest($request);
@@ -52,7 +55,9 @@ class ProfileController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager
     ): Response {
+        /** @var User $user */
         $user = $this->getUser();
+        
         $form = $this->createForm(ChangePasswordType::class);
         $form->handleRequest($request);
 

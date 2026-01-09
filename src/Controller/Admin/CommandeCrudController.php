@@ -217,26 +217,26 @@ class CommandeCrudController extends AbstractCrudController
                 TextField::new('villeLivraison')
                     ->setLabel('Ville'),
                 
-                // Lignes de commande avec détails
+                // Lignes de commande avec détails en HTML
                 CollectionField::new('ligneCommandes')
                     ->setLabel('Articles commandés')
-                    ->setTemplatePath('admin/commande_lignes.html.twig')
                     ->formatValue(function ($value, $entity) {
-                        $html = '<table class="table table-sm">';
-                        $html .= '<thead><tr><th>Livre</th><th>Quantité</th><th>Prix unitaire</th><th>Sous-total</th></tr></thead>';
+                        $html = '<div class="table-responsive">';
+                        $html .= '<table class="table table-striped table-hover">';
+                        $html .= '<thead class="table-dark"><tr><th>Livre</th><th>Quantité</th><th>Prix unitaire</th><th>Sous-total</th></tr></thead>';
                         $html .= '<tbody>';
                         
                         foreach ($entity->getLigneCommandes() as $ligne) {
                             $html .= sprintf(
-                                '<tr><td>%s</td><td>%d</td><td>%s €</td><td>%s €</td></tr>',
-                                $ligne->getLivre()->getTitre(),
+                                '<tr><td>%s</td><td class="text-center">%d</td><td class="text-end">%s €</td><td class="text-end fw-bold">%s €</td></tr>',
+                                htmlspecialchars($ligne->getLivre()->getTitre()),
                                 $ligne->getQuantite(),
                                 number_format($ligne->getPrixUnitaire(), 2, ',', ' '),
                                 number_format($ligne->getQuantite() * $ligne->getPrixUnitaire(), 2, ',', ' ')
                             );
                         }
                         
-                        $html .= '</tbody></table>';
+                        $html .= '</tbody></table></div>';
                         return $html;
                     }),
             ];

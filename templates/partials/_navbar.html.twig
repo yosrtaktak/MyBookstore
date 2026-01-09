@@ -15,7 +15,18 @@
                         <a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_books') }}">Nos Livres</a>
+                        <a class="nav-link" href="{{ path('app_catalogue') }}">Catalogue</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="{{ path('app_panier') }}">
+                            <i class="fas fa-shopping-cart"></i> Panier
+                            {% set panier = app.session.get('panier', {}) %}
+                            {% if panier|length > 0 %}
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ panier|length }}
+                                </span>
+                            {% endif %}
+                        </a>
                     </li>
                     
                     {% if is_granted('ROLE_AGENT') %}
@@ -50,7 +61,18 @@
                         <a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_books') }}">Nos Livres</a>
+                        <a class="nav-link" href="{{ path('app_catalogue') }}">Catalogue</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="{{ path('app_panier') }}">
+                            <i class="fas fa-shopping-cart"></i> Panier
+                            {% set panier = app.session.get('panier', {}) %}
+                            {% if panier|length > 0 %}
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ panier|length }}
+                                </span>
+                            {% endif %}
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_login') }}">
