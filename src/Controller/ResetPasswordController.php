@@ -73,7 +73,9 @@ class ResetPasswordController extends AbstractController
 
                         $mailer->send($emailMessage);
                     } catch (\Exception $e) {
-                        // Log the error but don't expose it to the user for security
+                         // Log the error for debugging
+                         // Using error_log as a fallback if logger not injected, or could inject LoggerInterface
+                         error_log("RESET PASSWORD ERROR: " . $e->getMessage());
                     }
 
                     // In dev mode, show the reset link directly (remove in production!)
