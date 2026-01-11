@@ -3,138 +3,240 @@
 {% block title %}Mon Profil - MyBookstore{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card shadow mb-4">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        {{ ux_icon('tabler:user-circle', {style: 'font-size: 4rem; color: #007bff;'}) }}
+{# ===== Page Header ===== #}
+<section class="hero-section" style="padding: 3rem 0;">
+    <div class="container">
+        <h1 class="hero-title" style="font-size: 2.5rem; margin-bottom: 0;">
+            <i class="fas fa-user-circle me-3" style="color: #fbbf24;"></i>Mon Profil
+        </h1>
+    </div>
+</section>
+
+<section class="section" style="padding-top: 2rem;">
+    <div class="container">
+        <div class="row">
+            {# ===== Profile Sidebar ===== #}
+            <div class="col-lg-3 col-md-4 mb-4">
+                <div class="profile-sidebar card">
+                    <div class="card-body text-center">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h5 class="profile-name">{{ user.prenom }} {{ user.nom }}</h5>
+                        <p class="profile-email">{{ user.email }}</p>
+
+                        {# Role Badges #}
+                        <div class="mb-4">
+                            {% for role in user.roles %}
+                                {% if role == 'ROLE_ADMIN' %}
+                                    <span class="badge" style="background: linear-gradient(135deg, #dc2626, #b91c1c);">
+                                        <i class="fas fa-crown me-1"></i> Administrateur
+                                    </span>
+                                {% elseif role == 'ROLE_AGENT' %}
+                                    <span class="badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                                        <i class="fas fa-user-tie me-1"></i> Agent
+                                    </span>
+                                {% elseif role == 'ROLE_ABONNE' %}
+                                    <span class="badge" style="background: linear-gradient(135deg, #10b981, #059669);">
+                                        <i class="fas fa-user-check me-1"></i> Abonné
+                                    </span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <a href="{{ path('app_profile_edit') }}" class="btn btn-primary">
+                                <i class="fas fa-edit me-2"></i> Modifier mes infos
+                            </a>
+                            <a href="{{ path('app_profile_change_password') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-lock me-2"></i> Changer mot de passe
+                            </a>
+                        </div>
                     </div>
-                    <h5 class="card-title">{{ user.prenom }} {{ user.nom }}</h5>
-                    <p class="text-muted small">{{ user.email }}</p>
-                    
-                    <div class="d-grid gap-2">
-                        <a href="{{ path('app_profile_edit') }}" class="btn btn-primary btn-sm">
-                            Modifier mes infos
+                </div>
+
+                {# Admin Access Card #}
+                {% if is_granted('ROLE_AGENT') %}
+                <div class="card mt-4" style="border: 2px solid #f59e0b;">
+                    <div class="card-header" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none;">
+                        <h6 class="mb-0 text-white">
+                            <i class="fas fa-tachometer-alt me-2"></i> Accès Administration
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="small text-muted mb-3">
+                            Vous avez accès au tableau de bord d'administration.
+                        </p>
+                        <a href="{{ path('admin_dashboard') }}" class="btn btn-accent w-100">
+                            <i class="fas fa-external-link-alt me-2"></i> Ouvrir le Dashboard
                         </a>
-                        <a href="{{ path('app_profile_change_password') }}" class="btn btn-secondary btn-sm">
-                            Changer mot de passe
-                        </a>
                     </div>
                 </div>
+                {% endif %}
             </div>
 
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h6 class="mb-0">Mes rôles</h6>
-                </div>
-                <div class="card-body">
-                    {% for role in user.roles %}
-                        <span class="badge bg-info mb-2">{{ role }}</span>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-9">
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Mes Informations</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Prénom :</strong>
-                            <p>{{ user.prenom }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Nom :</strong>
-                            <p>{{ user.nom }}</p>
-                        </div>
+            {# ===== Main Content ===== #}
+            <div class="col-lg-9 col-md-8">
+                {# Personal Information Card #}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-id-card me-2"></i> Mes Informations Personnelles
+                        </h5>
                     </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <strong>Email :</strong>
-                            <p>{{ user.email }}</p>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Téléphone :</strong>
-                            <p>{{ user.telephone ?? 'Non renseigné' }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Ville :</strong>
-                            <p>{{ user.ville ?? 'Non renseignée' }}</p>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-8">
-                            <strong>Adresse :</strong>
-                            <p>{{ user.adresse ?? 'Non renseignée' }}</p>
-                        </div>
-                        <div class="col-md-4">
-                            <strong>Code postal :</strong>
-                            <p>{{ user.codePostal ?? 'Non renseigné' }}</p>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="profile-info-label">
+                                    <i class="fas fa-user me-1"></i> Prénom
+                                </div>
+                                <div class="profile-info-value fs-5">{{ user.prenom }}</div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="profile-info-label">
+                                    <i class="fas fa-user me-1"></i> Nom
+                                </div>
+                                <div class="profile-info-value fs-5">{{ user.nom }}</div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="profile-info-label">
+                                    <i class="fas fa-envelope me-1"></i> Email
+                                </div>
+                                <div class="profile-info-value fs-5">{{ user.email }}</div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="profile-info-label">
+                                    <i class="fas fa-phone me-1"></i> Téléphone
+                                </div>
+                                <div class="profile-info-value fs-5">
+                                    {{ user.telephone ?? 'Non renseigné' }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {% if is_granted('ROLE_AGENT') %}
-            <div class="card shadow mb-4">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Accès Agent</h5>
-                </div>
-                <div class="card-body">
-                    <p>Vous avez accès au tableau de bord d'administration.</p>
-                    <a href="{{ path('admin_dashboard') }}" class="btn btn-success">
-                        Accéder au tableau de bord
-                    </a>
-                </div>
-            </div>
-            {% endif %}
-
-            <div class="card shadow">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Mes Commandes</h5>
-                </div>
-                <div class="card-body">
-                    {% if user.commandes|length > 0 %}
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Commande</th>
-                                        <th>Date</th>
-                                        <th>Statut</th>
-                                        <th>Montant</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for commande in user.commandes %}
-                                    <tr>
-                                        <td>#{{ commande.id }}</td>
-                                        <td>{{ commande.dateCommande|date('d/m/Y') }}</td>
-                                        <td>
-                                            <span class="badge bg-primary">{{ commande.statut }}</span>
-                                        </td>
-                                        <td>{{ commande.montantTotal }} €</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                {# Address Card #}
+                <div class="card mb-4">
+                    <div class="card-header" style="background: linear-gradient(135deg, #f0f4f8, #e2e8f0); border: none;">
+                        <h5 class="mb-0" style="color: #334e68;">
+                            <i class="fas fa-map-marker-alt me-2"></i> Adresse de Livraison
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 mb-4">
+                                <div class="profile-info-label">
+                                    <i class="fas fa-home me-1"></i> Adresse
+                                </div>
+                                <div class="profile-info-value">
+                                    {{ user.adresse ?? 'Non renseignée' }}
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="profile-info-label">
+                                    <i class="fas fa-mail-bulk me-1"></i> Code postal
+                                </div>
+                                <div class="profile-info-value">
+                                    {{ user.codePostal ?? 'Non renseigné' }}
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="profile-info-label">
+                                    <i class="fas fa-city me-1"></i> Ville
+                                </div>
+                                <div class="profile-info-value">
+                                    {{ user.ville ?? 'Non renseignée' }}
+                                </div>
+                            </div>
                         </div>
-                    {% else %}
-                        <p class="text-muted">Vous n'avez pas encore de commande.</p>
-                    {% endif %}
+
+                        {% if not user.adresse and not user.codePostal and not user.ville %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Complétez votre adresse pour faciliter vos futures commandes.
+                            <a href="{{ path('app_profile_edit') }}" class="alert-link ms-2">
+                                Compléter maintenant
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# Orders Card #}
+                <div class="card">
+                    <div class="card-header" style="background: linear-gradient(135deg, #334e68, #243b53);">
+                        <h5 class="mb-0 text-white">
+                            <i class="fas fa-shopping-bag me-2"></i> Mes Commandes
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        {% if user.commandes|length > 0 %}
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>N° Commande</th>
+                                            <th>Date</th>
+                                            <th>Articles</th>
+                                            <th>Statut</th>
+                                            <th class="text-end">Montant</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for commande in user.commandes|reverse %}
+                                        <tr>
+                                            <td>
+                                                <strong style="color: #334e68;">#{{ commande.id }}</strong>
+                                            </td>
+                                            <td>
+                                                <i class="fas fa-calendar-alt me-1 text-muted"></i>
+                                                {{ commande.dateCommande|date('d/m/Y') }}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark">
+                                                    {{ commande.ligneCommandes|length }} article(s)
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if commande.statut == 'en_attente' or commande.statut == 'En attente' %}
+                                                    <span class="status-badge status-pending">En attente</span>
+                                                {% elseif commande.statut == 'livrée' or commande.statut == 'Livrée' %}
+                                                    <span class="status-badge status-delivered">Livrée</span>
+                                                {% elseif commande.statut == 'annulée' or commande.statut == 'Annulée' %}
+                                                    <span class="status-badge status-cancelled">Annulée</span>
+                                                {% else %}
+                                                    <span class="badge bg-info">{{ commande.statut }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end">
+                                                <strong style="font-family: 'Playfair Display', serif; color: #334e68;">
+                                                    {{ commande.montantTotal|number_format(2, ',', ' ') }} €
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <div class="mb-4" style="font-size: 4rem; opacity: 0.3;">
+                                    <i class="fas fa-shopping-bag"></i>
+                                </div>
+                                <h5 class="text-muted">Aucune commande pour le moment</h5>
+                                <p class="text-muted mb-4">
+                                    Explorez notre catalogue et passez votre première commande !
+                                </p>
+                                <a href="{{ path('app_catalogue') }}" class="btn btn-primary">
+                                    <i class="fas fa-book-open me-2"></i> Découvrir le catalogue
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}

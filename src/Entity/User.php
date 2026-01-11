@@ -66,6 +66,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $codePostal = null;
 
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $resetToken = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $resetTokenExpiresAt = null;
+
     /**
      * @var Collection<int, Commande>
      */
@@ -268,5 +274,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function setResetToken(?string $resetToken): static
+    {
+        $this->resetToken = $resetToken;
+
+        return $this;
+    }
+
+    public function getResetTokenExpiresAt(): ?\DateTimeImmutable
+    {
+        return $this->resetTokenExpiresAt;
+    }
+
+    public function setResetTokenExpiresAt(?\DateTimeImmutable $resetTokenExpiresAt): static
+    {
+        $this->resetTokenExpiresAt = $resetTokenExpiresAt;
+
+        return $this;
+    }
+
+    public function isResetTokenValid(): bool
+    {
+        return $this->resetToken !== null
+            && $this->resetTokenExpiresAt !== null
+            && $this->resetTokenExpiresAt > new \DateTimeImmutable();
     }
 }

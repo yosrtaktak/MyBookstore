@@ -3,232 +3,280 @@
 {% block title %}Mon Panier - MyBookstore{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="display-5 fw-bold mb-4">
-                {{ ux_icon('tabler:shopping-cart') }} Mon Panier
-            </h1>
-        </div>
+{# ===== Page Header ===== #}
+<section class="hero-section" style="padding: 3rem 0;">
+    <div class="container">
+        <h1 class="hero-title" style="font-size: 2.5rem; margin-bottom: 0;">
+            <i class="fas fa-shopping-cart me-3" style="color: #fbbf24;"></i>Mon Panier
+        </h1>
     </div>
+</section>
 
-    {% if cartItems is empty %}
-        {# Panier vide #}
-        <div class="row">
-            <div class="col-md-6 mx-auto text-center">
-                <div class="card border-0 shadow-sm p-5">
-                    <div class="card-body">
-                        <div class="mb-4" style="font-size: 5rem; opacity: 0.3;">
-                            {{ ux_icon('tabler:shopping-cart-off') }}
+<section class="cart-page">
+    <div class="container">
+        {% if cartItems is empty %}
+            {# ===== Empty Cart ===== #}
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="cart-empty card">
+                        <div class="card-body text-center py-5">
+                            <div class="cart-empty-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <h3 style="font-family: 'Playfair Display', serif;">Votre panier est vide</h3>
+                            <p class="text-muted mb-4">
+                                Découvrez notre catalogue et ajoutez des livres passionnants à votre panier.
+                            </p>
+                            <a href="{{ path('app_catalogue') }}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-book-open me-2"></i> Explorer le catalogue
+                            </a>
                         </div>
-                        <h3 class="card-title mb-3">Votre panier est vide</h3>
-                        <p class="card-text text-muted mb-4">
-                            Découvrez notre catalogue et ajoutez des livres à votre panier.
-                        </p>
-                        <a href="{{ path('app_catalogue') }}" class="btn btn-primary btn-lg">
-                            {{ ux_icon('tabler:books') }} Continuer mes achats
-                        </a>
                     </div>
                 </div>
             </div>
-        </div>
-    {% else %}
-        {# Panier avec articles #}
-        <div class="row">
-            <div class="col-lg-8 mb-4">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title mb-4">
-                            Articles dans votre panier ({{ cartItems|length }})
-                        </h5>
-
-                        <div class="table-responsive">
-                            <table class="table align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 100px;">Image</th>
-                                        <th>Livre</th>
-                                        <th style="width: 120px;" class="text-end">Prix unitaire</th>
-                                        <th style="width: 150px;" class="text-center">Quantité</th>
-                                        <th style="width: 120px;" class="text-end">Sous-total</th>
-                                        <th style="width: 80px;" class="text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for item in cartItems %}
-                                    {% set livre = item.livre %}
-                                    {% set quantity = item.quantity %}
-                                    {% set subtotal = livre.prix * quantity %}
-                                    <tr>
-                                        <td>
-                                            <a href="{{ path('app_book_show', {id: livre.id}) }}">
-                                                {% if livre.imageCouverture %}
-                                                    <img src="{{ asset('uploads/livres/' ~ livre.imageCouverture) }}" 
-                                                         alt="{{ livre.titre }}"
-                                                         class="img-thumbnail"
-                                                         style="width: 80px; height: 100px; object-fit: cover;">
-                                                {% else %}
-                                                    <div class="bg-light d-flex align-items-center justify-content-center img-thumbnail"
-                                                         style="width: 80px; height: 100px;">
-                                                        {{ ux_icon('tabler:book') }}
-                                                    </div>
-                                                {% endif %}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <h6 class="mb-1">
-                                                <a href="{{ path('app_book_show', {id: livre.id}) }}" 
-                                                   class="text-decoration-none text-dark">
+        {% else %}
+            {# ===== Cart with Items ===== #}
+            <div class="row">
+                {# Cart Items #}
+                <div class="col-lg-8 mb-4">
+                    <div class="card cart-table">
+                        <div class="card-header d-flex justify-content-between align-items-center"
+                             style="background: linear-gradient(135deg, #f0f4f8, #e2e8f0); border: none;">
+                            <h5 class="mb-0" style="color: #334e68;">
+                                <i class="fas fa-shopping-basket me-2"></i>
+                                Articles ({{ cartItems|length }})
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 100px;">Image</th>
+                                            <th>Livre</th>
+                                            <th class="text-end" style="width: 120px;">Prix</th>
+                                            <th class="text-center" style="width: 180px;">Quantité</th>
+                                            <th class="text-end" style="width: 120px;">Sous-total</th>
+                                            <th class="text-center" style="width: 60px;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in cartItems %}
+                                        {% set livre = item.livre %}
+                                        {% set quantity = item.quantity %}
+                                        {% set subtotal = livre.prix * quantity %}
+                                        <tr>
+                                            <td>
+                                                <a href="{{ path('app_book_show', {id: livre.id}) }}">
+                                                    {% if livre.imageCouverture %}
+                                                        <img src="{{ asset('uploads/livres/' ~ livre.imageCouverture) }}"
+                                                             alt="{{ livre.titre }}"
+                                                             class="cart-item-image">
+                                                    {% else %}
+                                                        <div class="cart-item-image d-flex align-items-center justify-content-center"
+                                                             style="background: #f1f5f9;">
+                                                            <i class="fas fa-book" style="color: #94a3b8;"></i>
+                                                        </div>
+                                                    {% endif %}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a href="{{ path('app_book_show', {id: livre.id}) }}"
+                                                   class="cart-item-title text-decoration-none">
                                                     {{ livre.titre }}
                                                 </a>
-                                            </h6>
-                                            <small class="text-muted">
-                                                {% if livre.auteurs|length > 0 %}
-                                                    {{ livre.auteurs[0].prenom }} {{ livre.auteurs[0].nom }}
+                                                <div class="cart-item-author">
+                                                    {% if livre.auteurs|length > 0 %}
+                                                        <i class="fas fa-feather-alt me-1"></i>
+                                                        {{ livre.auteurs[0].prenom }} {{ livre.auteurs[0].nom }}
+                                                    {% endif %}
+                                                </div>
+                                                {% if quantity > livre.stock %}
+                                                    <span class="stock-badge out-of-stock mt-2">
+                                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                                        Stock insuffisant ({{ livre.stock }} disponible{{ livre.stock > 1 ? 's' : '' }})
+                                                    </span>
+                                                {% elseif livre.stock < 5 %}
+                                                    <span class="stock-badge low-stock mt-2">
+                                                        <i class="fas fa-info-circle me-1"></i>
+                                                        Plus que {{ livre.stock }} en stock
+                                                    </span>
                                                 {% endif %}
-                                            </small>
-                                            {% if quantity > livre.stock %}
-                                                <br>
-                                                <span class="badge bg-danger mt-1">
-                                                    Stock insuffisant ({{ livre.stock }} disponible{{ livre.stock > 1 ? 's' : '' }})
-                                                </span>
-                                            {% elseif livre.stock < 5 %}
-                                                <br>
-                                                <span class="badge bg-warning text-dark mt-1">
-                                                    Plus que {{ livre.stock }} en stock
-                                                </span>
-                                            {% endif %}
-                                        </td>
-                                        <td class="text-end">
-                                            <strong>{{ livre.prix }} €</strong>
-                                        </td>
-                                        <td>
-                                            <div class="input-group input-group-sm">
-                                                <button class="btn btn-outline-secondary" type="button"
-                                                        onclick="updateQuantity({{ livre.id }}, {{ quantity - 1 }})">
-                                                    {{ ux_icon('tabler:minus') }}
-                                                </button>
-                                                <input type="number" 
-                                                       class="form-control text-center" 
-                                                       value="{{ quantity }}"
-                                                       min="1" 
-                                                       max="{{ livre.stock }}"
-                                                       id="quantity-{{ livre.id }}"
-                                                       style="max-width: 70px;">
-                                                <button class="btn btn-outline-secondary" type="button"
-                                                        onclick="updateQuantity({{ livre.id }}, {{ quantity + 1 }})">
-                                                    {{ ux_icon('tabler:plus') }}
-                                                </button>
-                                            </div>
-                                            <div class="text-center mt-1">
-                                                <button class="btn btn-link btn-sm text-decoration-none p-0" 
-                                                        onclick="updateQuantityFromInput({{ livre.id }})">
-                                                    <small>{{ ux_icon('tabler:refresh') }} Actualiser</small>
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td class="text-end">
-                                            <strong class="text-primary">{{ subtotal|number_format(2, ',', ' ') }} €</strong>
-                                        </td>
-                                        <td class="text-center">
-                                            <form method="post" action="{{ path('app_cart_remove', {id: livre.id}) }}" 
-                                                  onsubmit="return confirm('Êtes-vous sûr de vouloir retirer cet article ?');">
-                                                <button type="submit" class="btn btn-outline-danger btn-sm" 
-                                                        title="Supprimer">
-                                                    {{ ux_icon('tabler:trash') }}
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                                            </td>
+                                            <td class="text-end">
+                                                <strong style="color: #334e68;">{{ livre.prix|number_format(2, ',', ' ') }} €</strong>
+                                            </td>
+                                            <td>
+                                                <div class="cart-quantity-control mx-auto">
+                                                    <button type="button" onclick="updateQuantity({{ livre.id }}, {{ quantity - 1 }})">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                    <input type="number"
+                                                           value="{{ quantity }}"
+                                                           min="1"
+                                                           max="{{ livre.stock }}"
+                                                           id="quantity-{{ livre.id }}"
+                                                           onchange="updateQuantityFromInput({{ livre.id }})">
+                                                    <button type="button" onclick="updateQuantity({{ livre.id }}, {{ quantity + 1 }})">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td class="text-end">
+                                                <strong style="color: #334e68; font-size: 1.1rem;">
+                                                    {{ subtotal|number_format(2, ',', ' ') }} €
+                                                </strong>
+                                            </td>
+                                            <td class="text-center">
+                                                <form method="post" action="{{ path('app_cart_remove', {id: livre.id}) }}"
+                                                      onsubmit="return confirm('Retirer cet article du panier ?');">
+                                                    <button type="submit" class="btn btn-link text-danger p-0" title="Supprimer">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-
-                        <div class="mt-3">
+                        <div class="card-footer d-flex justify-content-between align-items-center">
                             <a href="{{ path('app_catalogue') }}" class="btn btn-outline-secondary">
-                                {{ ux_icon('tabler:arrow-left') }} Continuer mes achats
+                                <i class="fas fa-arrow-left me-2"></i> Continuer mes achats
                             </a>
+                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#clearCartModal">
+                                <i class="fas fa-trash me-2"></i> Vider le panier
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {# Order Summary #}
+                <div class="col-lg-4">
+                    <div class="cart-summary">
+                        <div class="cart-summary-header">
+                            <h5><i class="fas fa-receipt me-2"></i> Récapitulatif</h5>
+                        </div>
+                        <div class="cart-summary-body">
+                            {# Subtotal #}
+                            <div class="cart-summary-row">
+                                <span class="text-muted">Sous-total</span>
+                                <strong>{{ total|number_format(2, ',', ' ') }} €</strong>
+                            </div>
+
+                            {# Shipping #}
+                            <div class="cart-summary-row">
+                                <span class="text-muted">Frais de livraison</span>
+                                {% if total >= 30 %}
+                                    <span class="text-success fw-bold">
+                                        <i class="fas fa-gift me-1"></i> Gratuit
+                                    </span>
+                                {% else %}
+                                    <strong>5,00 €</strong>
+                                {% endif %}
+                            </div>
+
+                            {# Free Shipping Progress #}
+                            {% if total < 30 %}
+                            <div class="shipping-progress">
+                                <i class="fas fa-truck me-2"></i>
+                                Plus que <strong>{{ (30 - total)|number_format(2, ',', ' ') }} €</strong>
+                                pour la livraison gratuite !
+                                <div class="progress mt-2" style="height: 6px;">
+                                    <div class="progress-bar" role="progressbar"
+                                         style="width: {{ (total / 30) * 100 }}%; background: linear-gradient(90deg, #3b82f6, #2563eb);"
+                                         aria-valuenow="{{ total }}" aria-valuemin="0" aria-valuemax="30"></div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="free-shipping-notice">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Félicitations ! Vous bénéficiez de la livraison gratuite.
+                            </div>
+                            {% endif %}
+
+                            {# Total #}
+                            {% set finalTotal = total >= 30 ? total : total + 5 %}
+                            <div class="cart-summary-row total mt-3">
+                                <span>Total</span>
+                                <span style="font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #334e68;">
+                                    {{ finalTotal|number_format(2, ',', ' ') }} €
+                                </span>
+                            </div>
+
+                            {# Checkout Button #}
+                            <a href="{{ path('app_panier_valider') }}" class="btn btn-primary btn-lg w-100 mt-4">
+                                <i class="fas fa-lock me-2"></i> Valider la commande
+                            </a>
+
+                            {# Benefits #}
+                            <div class="cart-benefits">
+                                <div class="cart-benefit-item">
+                                    <i class="fas fa-truck fa-fw"></i>
+                                    <span>Livraison en 2-3 jours ouvrés</span>
+                                </div>
+                                <div class="cart-benefit-item">
+                                    <i class="fas fa-shield-alt fa-fw"></i>
+                                    <span>Paiement 100% sécurisé</span>
+                                </div>
+                                <div class="cart-benefit-item">
+                                    <i class="fas fa-undo fa-fw"></i>
+                                    <span>Retour gratuit sous 14 jours</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {# Récapitulatif #}
-            <div class="col-lg-4">
-                <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
-                    <div class="card-body">
-                        <h5 class="card-title mb-4">Récapitulatif</h5>
+        {% endif %}
+    </div>
+</section>
 
-                        <div class="d-flex justify-content-between mb-3">
-                            <span>Sous-total</span>
-                            <strong>{{ total|number_format(2, ',', ' ') }} €</strong>
-                        </div>
-
-                        <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
-                            <span>Frais de livraison</span>
-                            {% if total >= 30 %}
-                                <span class="text-success">
-                                    <strong>Gratuit</strong>
-                                    {{ ux_icon('tabler:gift') }}
-                                </span>
-                            {% else %}
-                                <strong>5,00 €</strong>
-                            {% endif %}
-                        </div>
-
-                        {% set finalTotal = total >= 30 ? total : total + 5 %}
-                        <div class="d-flex justify-content-between mb-4">
-                            <h5 class="mb-0">Total</h5>
-                            <h5 class="mb-0 text-primary">{{ finalTotal|number_format(2, ',', ' ') }} €</h5>
-                        </div>
-
-                        {% if total < 30 %}
-                            <div class="alert alert-info py-2 small">
-                                {{ ux_icon('tabler:info-circle') }}
-                                Plus que <strong>{{ (30 - total)|number_format(2, ',', ' ') }} €</strong> 
-                                pour la livraison gratuite !
-                            </div>
-                        {% endif %}
-
-                        <div class="d-grid gap-2">
-                            <a href="{{ path('app_panier_valider') }}" class="btn btn-primary btn-lg">
-                                {{ ux_icon('tabler:check') }} Valider la commande
-                            </a>
-
-                            <form method="post" action="{{ path('app_cart_clear') }}" 
-                                  onsubmit="return confirm('Êtes-vous sûr de vouloir vider le panier ?');">
-                                <button type="submit" class="btn btn-outline-danger w-100">
-                                    {{ ux_icon('tabler:trash') }} Vider le panier
-                                </button>
-                            </form>
-                        </div>
-
-                        <hr class="my-4">
-
-                        <div class="small text-muted">
-                            <p class="mb-2">
-                                <strong>{{ ux_icon('tabler:truck-delivery') }} Livraison :</strong>
-                                2-3 jours ouvrés
-                            </p>
-                            <p class="mb-2">
-                                <strong>{{ ux_icon('tabler:shield-check') }} Paiement :</strong>
-                                100% sécurisé
-                            </p>
-                            <p class="mb-0">
-                                <strong>{{ ux_icon('tabler:reload') }} Retour :</strong>
-                                Gratuit sous 14 jours
-                            </p>
-                        </div>
-                    </div>
+{# ===== Clear Cart Modal ===== #}
+{% if cartItems is not empty %}
+<div class="modal fade" id="clearCartModal" tabindex="-1" aria-labelledby="clearCartModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border: none; border-radius: 1rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+            <div class="modal-header border-0" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 1rem 1rem 0 0;">
+                <h5 class="modal-title" id="clearCartModalLabel" style="color: #92400e;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Vider le panier
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body py-4 text-center">
+                <div style="font-size: 4rem; color: #f59e0b; margin-bottom: 1rem;">
+                    <i class="fas fa-shopping-cart"></i>
                 </div>
+                <p class="mb-0">
+                    Êtes-vous sûr de vouloir vider complètement votre panier ?
+                </p>
+                <p class="text-muted mt-2">
+                    <strong style="color: #334e68;">{{ cartItems|length }} article{{ cartItems|length > 1 ? 's' : '' }}</strong>
+                    sera{{ cartItems|length > 1 ? 'ont' : '' }} supprimé{{ cartItems|length > 1 ? 's' : '' }}.
+                </p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center gap-3 pb-4">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Annuler
+                </button>
+                <form method="post" action="{{ path('app_cart_clear') }}" class="d-inline">
+                    <button type="submit" class="btn btn-danger px-4">
+                        <i class="fas fa-trash me-2"></i>Oui, vider
+                    </button>
+                </form>
             </div>
         </div>
-    {% endif %}
+    </div>
 </div>
+{% endif %}
+{% endblock %}
 
+{% block body_scripts %}
 <script>
-// Met à jour la quantité d'un article
+// Update cart quantity
 function updateQuantity(livreId, newQuantity) {
     if (newQuantity < 1) {
         if (confirm('Voulez-vous retirer cet article du panier ?')) {
@@ -250,17 +298,17 @@ function updateQuantity(livreId, newQuantity) {
     form.submit();
 }
 
-// Met à jour la quantité depuis l'input
+// Update quantity from input field
 function updateQuantityFromInput(livreId) {
     const input = document.getElementById('quantity-' + livreId);
     const newQuantity = parseInt(input.value);
-    
+
     if (newQuantity && newQuantity > 0) {
         updateQuantity(livreId, newQuantity);
     }
 }
 
-// Permet la mise à jour avec la touche Entrée
+// Allow Enter key to update quantity
 document.querySelectorAll('[id^="quantity-"]').forEach(input => {
     input.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
@@ -271,15 +319,4 @@ document.querySelectorAll('[id^="quantity-"]').forEach(input => {
     });
 });
 </script>
-
-<style>
-.sticky-top {
-    position: sticky;
-}
-@media (max-width: 992px) {
-    .sticky-top {
-        position: relative !important;
-    }
-}
-</style>
 {% endblock %}

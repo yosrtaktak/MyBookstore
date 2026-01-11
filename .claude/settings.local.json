@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php bin/console:*)",
+      "Bash(pg_isready:*)",
+      "Bash(findstr:*)",
+      "Bash(php:*)"
+    ]
+  }
+}

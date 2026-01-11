@@ -1,111 +1,174 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Inscription - MyBookstore{% endblock %}
+{% block title %}Créer un compte - MyBookstore{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">Créer un compte</h2>
-                </div>
-                <div class="card-body p-4">
-                    {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="form-group">
-                                {{ form_label(registrationForm.prenom) }}
-                                {{ form_widget(registrationForm.prenom) }}
+<section class="auth-page" style="padding: 2rem 0;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="auth-card animate-fadeInUp">
+                    {# Header #}
+                    <div class="auth-header">
+                        <div class="mb-3">
+                            <i class="fas fa-user-plus fa-3x" style="color: #fbbf24;"></i>
+                        </div>
+                        <h2>Créer un compte</h2>
+                        <p>Rejoignez MyBookstore et découvrez notre univers</p>
+                    </div>
+
+                    {# Body #}
+                    <div class="auth-body">
+                        {{ form_start(registrationForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+                        {# Name Fields #}
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="{{ registrationForm.prenom.vars.id }}" class="form-label">
+                                    <i class="fas fa-user me-1 text-muted"></i> Prénom *
+                                </label>
+                                {{ form_widget(registrationForm.prenom, {
+                                    'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Votre prénom'}
+                                }) }}
                                 {{ form_errors(registrationForm.prenom) }}
                             </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="form-group">
-                                {{ form_label(registrationForm.nom) }}
-                                {{ form_widget(registrationForm.nom) }}
+                            <div class="col-md-6">
+                                <label for="{{ registrationForm.nom.vars.id }}" class="form-label">
+                                    <i class="fas fa-user me-1 text-muted"></i> Nom *
+                                </label>
+                                {{ form_widget(registrationForm.nom, {
+                                    'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Votre nom'}
+                                }) }}
                                 {{ form_errors(registrationForm.nom) }}
                             </div>
                         </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <div class="form-group">
-                            {{ form_label(registrationForm.email) }}
-                            {{ form_widget(registrationForm.email) }}
+                        {# Email Field #}
+                        <div class="mb-4">
+                            <label for="{{ registrationForm.email.vars.id }}" class="form-label">
+                                <i class="fas fa-envelope me-1 text-muted"></i> Adresse email *
+                            </label>
+                            {{ form_widget(registrationForm.email, {
+                                'attr': {'class': 'form-control form-control-lg', 'placeholder': 'votre@email.com'}
+                            }) }}
                             {{ form_errors(registrationForm.email) }}
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="form-group">
-                                {{ form_label(registrationForm.telephone) }}
-                                {{ form_widget(registrationForm.telephone) }}
-                                {{ form_errors(registrationForm.telephone) }}
+                        {# Password Fields #}
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="{{ registrationForm.plainPassword.first.vars.id }}" class="form-label">
+                                    <i class="fas fa-lock me-1 text-muted"></i> Mot de passe *
+                                </label>
+                                {{ form_widget(registrationForm.plainPassword.first, {
+                                    'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Minimum 6 caractères'}
+                                }) }}
+                                {{ form_errors(registrationForm.plainPassword.first) }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ registrationForm.plainPassword.second.vars.id }}" class="form-label">
+                                    <i class="fas fa-lock me-1 text-muted"></i> Confirmation *
+                                </label>
+                                {{ form_widget(registrationForm.plainPassword.second, {
+                                    'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Confirmez le mot de passe'}
+                                }) }}
+                                {{ form_errors(registrationForm.plainPassword.second) }}
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="form-group">
-                                {{ form_label(registrationForm.ville) }}
-                                {{ form_widget(registrationForm.ville) }}
+
+                        {# Phone and City Fields #}
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="{{ registrationForm.telephone.vars.id }}" class="form-label">
+                                    <i class="fas fa-phone me-1 text-muted"></i> Téléphone
+                                </label>
+                                {{ form_widget(registrationForm.telephone, {
+                                    'attr': {'class': 'form-control form-control-lg', 'placeholder': '06 XX XX XX XX'}
+                                }) }}
+                                {{ form_errors(registrationForm.telephone) }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ registrationForm.ville.vars.id }}" class="form-label">
+                                    <i class="fas fa-city me-1 text-muted"></i> Ville
+                                </label>
+                                {{ form_widget(registrationForm.ville, {
+                                    'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Votre ville'}
+                                }) }}
                                 {{ form_errors(registrationForm.ville) }}
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-8 mb-3">
-                            <div class="form-group">
-                                {{ form_label(registrationForm.adresse) }}
-                                {{ form_widget(registrationForm.adresse) }}
+                        {# Address Fields #}
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-8">
+                                <label for="{{ registrationForm.adresse.vars.id }}" class="form-label">
+                                    <i class="fas fa-map-marker-alt me-1 text-muted"></i> Adresse
+                                </label>
+                                {{ form_widget(registrationForm.adresse, {
+                                    'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Votre adresse complète'}
+                                }) }}
                                 {{ form_errors(registrationForm.adresse) }}
                             </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="form-group">
-                                {{ form_label(registrationForm.codePostal) }}
-                                {{ form_widget(registrationForm.codePostal) }}
+                            <div class="col-md-4">
+                                <label for="{{ registrationForm.codePostal.vars.id }}" class="form-label">
+                                    <i class="fas fa-mail-bulk me-1 text-muted"></i> Code postal
+                                </label>
+                                {{ form_widget(registrationForm.codePostal, {
+                                    'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Code postal'}
+                                }) }}
                                 {{ form_errors(registrationForm.codePostal) }}
                             </div>
                         </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <div class="form-group">
-                            {{ form_label(registrationForm.plainPassword.first) }}
-                            {{ form_widget(registrationForm.plainPassword.first) }}
-                            {{ form_errors(registrationForm.plainPassword.first) }}
+                        {# Terms Checkbox #}
+                        <div class="mb-4">
+                            <div class="form-check">
+                                {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                                <label class="form-check-label" for="{{ registrationForm.agreeTerms.vars.id }}">
+                                    J'accepte les <a href="#" class="text-primary">conditions d'utilisation</a>
+                                    et la <a href="#" class="text-primary">politique de confidentialité</a> *
+                                </label>
+                            </div>
+                            {{ form_errors(registrationForm.agreeTerms) }}
+                        </div>
+
+                        {# Submit Button #}
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-user-plus me-2"></i> Créer mon compte
+                        </button>
+
+                        {{ form_end(registrationForm) }}
+
+                        {# Benefits #}
+                        <div class="mt-4 pt-4 border-top">
+                            <p class="text-muted small mb-2">En créant un compte, vous bénéficiez de :</p>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <small>Accès à des milliers de livres</small>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <small>Suivi de vos commandes en temps réel</small>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <small>Offres exclusives et promotions</small>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <div class="form-group">
-                            {{ form_label(registrationForm.plainPassword.second) }}
-                            {{ form_widget(registrationForm.plainPassword.second) }}
-                            {{ form_errors(registrationForm.plainPassword.second) }}
-                        </div>
+                    {# Footer #}
+                    <div class="auth-footer">
+                        <p class="mb-0">
+                            Déjà un compte ?
+                            <a href="{{ path('app_login') }}" class="fw-bold" style="color: #334e68;">
+                                Se connecter
+                            </a>
+                        </p>
                     </div>
-
-                    <div class="mb-3 form-check">
-                        {{ form_widget(registrationForm.agreeTerms) }}
-                        {{ form_label(registrationForm.agreeTerms) }}
-                        {{ form_errors(registrationForm.agreeTerms) }}
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-lg w-100">S'inscrire</button>
-                    
-                    {{ form_end(registrationForm) }}
-
-                    <hr>
-                    <p class="text-center mt-3">
-                        Vous avez déjà un compte ? 
-                        <a href="{{ path('app_login') }}" class="fw-bold">Connectez-vous ici</a>
-                    </p>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}

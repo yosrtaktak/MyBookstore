@@ -3,54 +3,104 @@
 {% block title %}Connexion - MyBookstore{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">Se connecter</h2>
-                </div>
-                <div class="card-body p-4">
-                    {% if error %}
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <strong>Erreur d'authentification !</strong>
-                            {{ error.messageKey|trans(error.messageData, 'security') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-                        </div>
-                    {% endif %}
-
-                    <form method="post" action="{{ path('app_login') }}">
+<section class="auth-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="auth-card animate-fadeInUp">
+                    {# Header #}
+                    <div class="auth-header">
                         <div class="mb-3">
-                            <label for="inputEmail" class="form-label">Adresse email</label>
-                            <input type="email" name="_username" id="inputEmail" class="form-control" 
-                                   value="{{ last_username }}" required autofocus>
+                            <i class="fas fa-book-open fa-3x" style="color: #fbbf24;"></i>
                         </div>
+                        <h2>Bienvenue</h2>
+                        <p>Connectez-vous à votre compte MyBookstore</p>
+                    </div>
 
-                        <div class="mb-3">
-                            <label for="inputPassword" class="form-label">Mot de passe</label>
-                            <input type="password" name="_password" id="inputPassword" class="form-control" required>
+                    {# Body #}
+                    <div class="auth-body">
+                        {# Error Alert #}
+                        {% if error %}
+                            <div class="alert alert-danger animate-fadeInUp" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                {{ error.messageKey|trans(error.messageData, 'security') }}
+                            </div>
+                        {% endif %}
+
+                        {# Login Form #}
+                        <form method="post" action="{{ path('app_login') }}">
+                            <div class="mb-4">
+                                <label for="inputEmail" class="form-label">
+                                    <i class="fas fa-envelope me-1 text-muted"></i> Adresse email
+                                </label>
+                                <input type="email"
+                                       name="_username"
+                                       id="inputEmail"
+                                       class="form-control form-control-lg"
+                                       value="{{ last_username }}"
+                                       placeholder="votre@email.com"
+                                       required
+                                       autofocus>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="inputPassword" class="form-label">
+                                    <i class="fas fa-lock me-1 text-muted"></i> Mot de passe
+                                </label>
+                                <input type="password"
+                                       name="_password"
+                                       id="inputPassword"
+                                       class="form-control form-control-lg"
+                                       placeholder="Votre mot de passe"
+                                       required>
+                            </div>
+
+                            <div class="mb-4 d-flex justify-content-between align-items-center">
+                                <div class="form-check">
+                                    <input type="checkbox"
+                                           name="_remember_me"
+                                           id="remember_me"
+                                           class="form-check-input">
+                                    <label class="form-check-label" for="remember_me">
+                                        Se souvenir de moi
+                                    </label>
+                                </div>
+                                <a href="{{ path('app_forgot_password_request') }}" class="small" style="color: #334e68;">Mot de passe oublié ?</a>
+                            </div>
+
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-sign-in-alt me-2"></i> Se connecter
+                            </button>
+                        </form>
+
+                        {# Social Login (optional visual) #}
+                        <div class="text-center my-4">
+                            <span class="text-muted small">ou continuez avec</span>
                         </div>
-
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" name="_remember_me" id="remember_me" class="form-check-input">
-                            <label class="form-check-label" for="remember_me">
-                                Se souvenir de moi
-                            </label>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary flex-fill" disabled>
+                                <i class="fab fa-google me-2"></i> Google
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary flex-fill" disabled>
+                                <i class="fab fa-facebook-f me-2"></i> Facebook
+                            </button>
                         </div>
+                    </div>
 
-                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-                        <button type="submit" class="btn btn-primary btn-lg w-100">Se connecter</button>
-                    </form>
-
-                    <hr>
-                    <p class="text-center mt-3">
-                        Pas encore de compte ? 
-                        <a href="{{ path('app_register') }}" class="fw-bold">S'inscrire ici</a>
-                    </p>
+                    {# Footer #}
+                    <div class="auth-footer">
+                        <p class="mb-0">
+                            Pas encore de compte ?
+                            <a href="{{ path('app_register') }}" class="fw-bold" style="color: #334e68;">
+                                Créer un compte
+                            </a>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}

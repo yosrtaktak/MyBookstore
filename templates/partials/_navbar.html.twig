@@ -1,85 +1,130 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">
-            {{ ux_icon('tabler:book') }} MyBookstore
+{# Professional Navigation Bar #}
+<nav class="navbar navbar-expand-lg navbar-main">
+    <div class="container-fluid px-4">
+        {# Brand Logo #}
+        <a class="navbar-brand" href="{{ path('app_home') }}">
+            <i class="fas fa-book-open me-2" style="color: #fbbf24;"></i>
+            MyBookstore
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+
+        {# Mobile Toggle Button #}
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
+
+        {# Navigation Links #}
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            {# Main Nav Items #}
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
+                    <a class="nav-link {% if app.request.attributes.get('_route') == 'app_home' %}active{% endif %}"
+                       href="{{ path('app_home') }}">
+                        <i class="fas fa-home me-1"></i> Accueil
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_catalogue') }}">Catalogue</a>
+                    <a class="nav-link {% if app.request.attributes.get('_route') starts with 'app_catalogue' or app.request.attributes.get('_route') == 'app_book_show' %}active{% endif %}"
+                       href="{{ path('app_catalogue') }}">
+                        <i class="fas fa-book me-1"></i> Catalogue
+                    </a>
                 </li>
             </ul>
 
-            {# Barre de recherche #}
-            <form class="d-flex me-3" action="{{ path('app_catalogue') }}" method="get">
-                <div class="input-group">
-                    <input type="text" class="form-control" name="search" placeholder="Rechercher un livre..." 
-                           value="{{ app.request.query.get('search', '') }}" aria-label="Recherche">
-                    <button class="btn btn-outline-light" type="submit">
-                        {{ ux_icon('tabler:search') }}
+            {# Search Form #}
+            <form class="search-box me-3 d-flex" action="{{ path('app_catalogue') }}" method="get">
+                <div class="position-relative w-100">
+                    <input type="text"
+                           class="form-control"
+                           name="search"
+                           placeholder="Rechercher un livre, auteur..."
+                           value="{{ app.request.query.get('search', '') }}"
+                           aria-label="Recherche">
+                    <button type="submit" class="position-absolute top-50 end-0 translate-middle-y me-2 bg-transparent border-0" style="color: #9fb3c8;">
+                        <i class="fas fa-search"></i>
                     </button>
                 </div>
             </form>
 
-            <ul class="navbar-nav">
+            {# Right Side Nav Items #}
+            <ul class="navbar-nav align-items-center">
                 {% if app.user %}
-                    {# Utilisateur connecté #}
+                    {# Admin Link #}
                     {% if is_granted('ROLE_AGENT') %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('admin_dashboard') }}">
-                            {{ ux_icon('tabler:dashboard') }} Administration
+                            <i class="fas fa-tachometer-alt me-1"></i> Admin
                         </a>
                     </li>
                     {% endif %}
-                    
-                    <li class="nav-item">
-                        <a class="nav-link position-relative" href="{{ path('app_cart') }}">
-                            {{ ux_icon('tabler:shopping-cart') }}
+
+                    {# Cart Icon with Badge #}
+                    <li class="nav-item me-2">
+                        <a class="nav-link cart-badge" href="{{ path('app_cart') }}" title="Mon Panier">
+                            <i class="fas fa-shopping-cart fa-lg"></i>
                             {% set cart = app.session.get('cart', {}) %}
-                            {% set cartCount = cart is not empty ? cart|reduce((carry, qty) => carry + qty, 0) : 0 %}
+                            {% set cartCount = 0 %}
+                            {% for qty in cart %}
+                                {% set cartCount = cartCount + qty %}
+                            {% endfor %}
                             {% if cartCount > 0 %}
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    {{ cartCount }}
-                                </span>
+                                <span class="badge">{{ cartCount }}</span>
                             {% endif %}
                         </a>
                     </li>
-                    
+
+                    {# User Dropdown #}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ ux_icon('tabler:user') }} Bonjour {{ app.user.prenom }}
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#"
+                           id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle"
+                                 style="width: 36px; height: 36px; background: linear-gradient(135deg, #fbbf24, #f59e0b);">
+                                <span class="fw-bold text-dark" style="font-size: 0.875rem;">
+                                    {{ app.user.prenom|slice(0,1)|upper }}{{ app.user.nom|slice(0,1)|upper }}
+                                </span>
+                            </div>
+                            <span class="d-none d-lg-inline">{{ app.user.prenom }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="{{ path('app_profile') }}">
-                                {{ ux_icon('tabler:user-circle') }} Mon profil
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ path('app_profile_change_password') }}">
-                                {{ ux_icon('tabler:lock') }} Changer mot de passe
-                            </a></li>
+                            <li>
+                                <div class="px-4 py-3 border-bottom">
+                                    <p class="mb-0 fw-semibold text-dark">{{ app.user.prenom }} {{ app.user.nom }}</p>
+                                    <small class="text-muted">{{ app.user.email }}</small>
+                                </div>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2" href="{{ path('app_profile') }}">
+                                    <i class="fas fa-user me-2 text-muted"></i> Mon Profil
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2" href="{{ path('app_cart') }}">
+                                    <i class="fas fa-shopping-bag me-2 text-muted"></i> Mes Commandes
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2" href="{{ path('app_profile_change_password') }}">
+                                    <i class="fas fa-lock me-2 text-muted"></i> Changer mot de passe
+                                </a>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ path('app_logout') }}">
-                                {{ ux_icon('tabler:logout') }} Déconnexion
-                            </a></li>
+                            <li>
+                                <a class="dropdown-item py-2 text-danger" href="{{ path('app_logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Déconnexion
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 {% else %}
-                    {# Utilisateur non connecté #}
+                    {# Login & Register for Guests #}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_login') }}">
-                            {{ ux_icon('tabler:login') }} Connexion
+                            <i class="fas fa-sign-in-alt me-1"></i> Connexion
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_register') }}">
-                            {{ ux_icon('tabler:user-plus') }} Inscription
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-accent btn-sm" href="{{ path('app_register') }}">
+                            <i class="fas fa-user-plus me-1"></i> S'inscrire
                         </a>
                     </li>
                 {% endif %}

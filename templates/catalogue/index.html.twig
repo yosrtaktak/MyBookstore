@@ -3,320 +3,399 @@
 {% block title %}Catalogue - MyBookstore{% endblock %}
 
 {% block content %}
-{# En-tête du catalogue #}
-<div class="bg-primary text-white py-4">
-    <div class="container-fluid">
-        <h1 class="display-5 fw-bold mb-2">
-            {{ ux_icon('tabler:books') }} Notre Catalogue
-        </h1>
-        <p class="lead mb-0">{{ total }} livre{{ total > 1 ? 's' : '' }} disponible{{ total > 1 ? 's' : '' }}</p>
-    </div>
-</div>
-
-<div class="container-fluid my-4">
-    <div class="row">
-        {# Sidebar des filtres #}
-        <div class="col-lg-3 col-md-4 mb-4">
-            <div class="card shadow-sm sticky-top" style="top: 20px;">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">{{ ux_icon('tabler:filter') }} Filtres</h5>
-                </div>
-                <div class="card-body">
-                    <form method="get" action="{{ path('app_catalogue') }}" id="filterForm">
-                        {# Recherche #}
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">
-                                {{ ux_icon('tabler:search') }} Recherche
-                            </label>
-                            <input type="text" class="form-control" name="search" 
-                                   value="{{ filtres.search }}" 
-                                   placeholder="Titre, auteur, ISBN...">
-                        </div>
-
-                        {# Filtre par catégorie #}
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">
-                                {{ ux_icon('tabler:category') }} Catégorie
-                            </label>
-                            <select class="form-select" name="categorie" onchange="this.form.submit()">
-                                <option value="">Toutes les catégories</option>
-                                {% for categorie in categories %}
-                                    <option value="{{ categorie.id }}" 
-                                            {% if filtres.categorie == categorie.id %}selected{% endif %}>
-                                        {{ categorie.libelle }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        {# Filtre par éditeur #}
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">
-                                {{ ux_icon('tabler:building') }} Éditeur
-                            </label>
-                            <select class="form-select" name="editeur" onchange="this.form.submit()">
-                                <option value="">Tous les éditeurs</option>
-                                {% for editeur in editeurs %}
-                                    <option value="{{ editeur.id }}" 
-                                            {% if filtres.editeur == editeur.id %}selected{% endif %}>
-                                        {{ editeur.nomEditeur }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        {# Filtre par prix #}
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">
-                                {{ ux_icon('tabler:currency-euro') }} Prix
-                            </label>
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <input type="number" class="form-control" name="prix_min" 
-                                           value="{{ filtres.prix_min }}" 
-                                           placeholder="Min" step="0.01" min="0">
-                                </div>
-                                <div class="col-6">
-                                    <input type="number" class="form-control" name="prix_max" 
-                                           value="{{ filtres.prix_max }}" 
-                                           placeholder="Max" step="0.01" min="0">
-                                </div>
-                            </div>
-                        </div>
-
-                        {# Préserver le tri lors de la soumission #}
-                        <input type="hidden" name="tri" value="{{ filtres.tri }}">
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                {{ ux_icon('tabler:filter') }} Appliquer
-                            </button>
-                            <a href="{{ path('app_catalogue') }}" class="btn btn-outline-secondary">
-                                {{ ux_icon('tabler:x') }} Réinitialiser
+{# ===== Page Header ===== #}
+<section class="hero-section" style="padding: 3rem 0;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="hero-title" style="font-size: 2.5rem; margin-bottom: 0.5rem;">
+                    <i class="fas fa-book me-3" style="color: #fbbf24;"></i>Notre Catalogue
+                </h1>
+                <p class="lead mb-0" style="color: #bcccdc;">
+                    {{ total }} livre{{ total > 1 ? 's' : '' }} disponible{{ total > 1 ? 's' : '' }} pour vous
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-md-end mb-0" style="background: transparent;">
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('app_home') }}" class="text-white-50">
+                                <i class="fas fa-home"></i> Accueil
                             </a>
-                        </div>
-                    </form>
-                </div>
+                        </li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">Catalogue</li>
+                    </ol>
+                </nav>
             </div>
         </div>
+    </div>
+</section>
 
-        {# Zone principale - Liste des livres #}
-        <div class="col-lg-9 col-md-8">
-            {# Filtres actifs #}
-            {% if filtres.categorie or filtres.editeur or filtres.prix_min or filtres.prix_max or filtres.search %}
-            <div class="mb-3">
-                <h6 class="d-inline me-2">Filtres actifs :</h6>
-                {% if filtres.search %}
-                    <span class="badge bg-info me-2">
-                        Recherche: "{{ filtres.search }}"
-                        <a href="{{ path('app_catalogue', {categorie: filtres.categorie, editeur: filtres.editeur, prix_min: filtres.prix_min, prix_max: filtres.prix_max, tri: filtres.tri}) }}" 
-                           class="text-white text-decoration-none ms-1">×</a>
-                    </span>
-                {% endif %}
-                {% if categorieSelectionnee %}
-                    <span class="badge bg-primary me-2">
-                        {{ categorieSelectionnee.libelle }}
-                        <a href="{{ path('app_catalogue', {editeur: filtres.editeur, prix_min: filtres.prix_min, prix_max: filtres.prix_max, search: filtres.search, tri: filtres.tri}) }}" 
-                           class="text-white text-decoration-none ms-1">×</a>
-                    </span>
-                {% endif %}
-                {% if editeurSelectionne %}
-                    <span class="badge bg-primary me-2">
-                        {{ editeurSelectionne.nomEditeur }}
-                        <a href="{{ path('app_catalogue', {categorie: filtres.categorie, prix_min: filtres.prix_min, prix_max: filtres.prix_max, search: filtres.search, tri: filtres.tri}) }}" 
-                           class="text-white text-decoration-none ms-1">×</a>
-                    </span>
-                {% endif %}
-                {% if filtres.prix_min %}
-                    <span class="badge bg-success me-2">
-                        Prix min: {{ filtres.prix_min }}€
-                        <a href="{{ path('app_catalogue', {categorie: filtres.categorie, editeur: filtres.editeur, prix_max: filtres.prix_max, search: filtres.search, tri: filtres.tri}) }}" 
-                           class="text-white text-decoration-none ms-1">×</a>
-                    </span>
-                {% endif %}
-                {% if filtres.prix_max %}
-                    <span class="badge bg-success me-2">
-                        Prix max: {{ filtres.prix_max }}€
-                        <a href="{{ path('app_catalogue', {categorie: filtres.categorie, editeur: filtres.editeur, prix_min: filtres.prix_min, search: filtres.search, tri: filtres.tri}) }}" 
-                           class="text-white text-decoration-none ms-1">×</a>
-                    </span>
-                {% endif %}
-            </div>
-            {% endif %}
+<section class="section" style="padding-top: 2rem;">
+    <div class="container-fluid px-4">
+        <div class="row">
+            {# ===== Filter Sidebar ===== #}
+            <div class="col-lg-3 col-md-4 mb-4">
+                <div class="filter-sidebar card">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0">
+                            <i class="fas fa-filter me-2"></i> Filtres
+                        </h5>
+                        <a href="{{ path('app_catalogue') }}" class="btn btn-sm btn-light">
+                            <i class="fas fa-redo-alt"></i>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <form method="get" action="{{ path('app_catalogue') }}" id="filterForm">
+                            {# Search Input #}
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="fas fa-search me-1 text-muted"></i> Recherche
+                                </label>
+                                <input type="text" class="form-control" name="search"
+                                       value="{{ filtres.search }}"
+                                       placeholder="Titre, auteur, ISBN...">
+                            </div>
 
-            {# Barre de tri #}
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <strong>{{ total }}</strong> résultat{{ total > 1 ? 's' : '' }}
-                </div>
-                <div>
-                    <form method="get" action="{{ path('app_catalogue') }}" class="d-inline">
-                        {# Préserver les filtres #}
-                        {% if filtres.categorie %}<input type="hidden" name="categorie" value="{{ filtres.categorie }}">{% endif %}
-                        {% if filtres.editeur %}<input type="hidden" name="editeur" value="{{ filtres.editeur }}">{% endif %}
-                        {% if filtres.prix_min %}<input type="hidden" name="prix_min" value="{{ filtres.prix_min }}">{% endif %}
-                        {% if filtres.prix_max %}<input type="hidden" name="prix_max" value="{{ filtres.prix_max }}">{% endif %}
-                        {% if filtres.search %}<input type="hidden" name="search" value="{{ filtres.search }}">{% endif %}
-                        
-                        <label class="me-2">Trier par :</label>
-                        <select name="tri" class="form-select form-select-sm d-inline-block" style="width: auto;" onchange="this.form.submit()">
-                            <option value="newest" {% if filtres.tri == 'newest' %}selected{% endif %}>Nouveautés</option>
-                            <option value="price_asc" {% if filtres.tri == 'price_asc' %}selected{% endif %}>Prix croissant</option>
-                            <option value="price_desc" {% if filtres.tri == 'price_desc' %}selected{% endif %}>Prix décroissant</option>
-                            <option value="title" {% if filtres.tri == 'title' %}selected{% endif %}>Alphabétique</option>
-                        </select>
-                    </form>
-                </div>
-            </div>
+                            {# Category Filter #}
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="fas fa-tags me-1 text-muted"></i> Catégorie
+                                </label>
+                                <select class="form-select" name="categorie" onchange="this.form.submit()">
+                                    <option value="">Toutes les catégories</option>
+                                    {% for categorie in categories %}
+                                        <option value="{{ categorie.id }}"
+                                                {% if filtres.categorie == categorie.id %}selected{% endif %}>
+                                            {{ categorie.libelle }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
 
-            {# Grille des livres #}
-            {% if livres|length > 0 %}
-                <div class="row g-4">
-                    {% for livre in livres %}
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-                        <div class="card h-100 shadow-sm hover-lift">
-                            <a href="{{ path('app_book_show', {id: livre.id}) }}" class="text-decoration-none">
-                                {% if livre.imageCouverture %}
-                                    <img src="{{ asset('uploads/livres/' ~ livre.imageCouverture) }}" 
-                                         class="card-img-top" 
-                                         alt="{{ livre.titre }}"
-                                         style="height: 280px; object-fit: cover;">
-                                {% else %}
-                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
-                                         style="height: 280px;">
-                                        {{ ux_icon('tabler:book', {style: 'font-size: 4rem; opacity: 0.3;'}) }}
+                            {# Publisher Filter #}
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="fas fa-building me-1 text-muted"></i> Éditeur
+                                </label>
+                                <select class="form-select" name="editeur" onchange="this.form.submit()">
+                                    <option value="">Tous les éditeurs</option>
+                                    {% for editeur in editeurs %}
+                                        <option value="{{ editeur.id }}"
+                                                {% if filtres.editeur == editeur.id %}selected{% endif %}>
+                                            {{ editeur.nomEditeur }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            {# Price Range #}
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="fas fa-euro-sign me-1 text-muted"></i> Fourchette de prix
+                                </label>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <input type="number" class="form-control" name="prix_min"
+                                               value="{{ filtres.prix_min }}"
+                                               placeholder="Min €" step="0.01" min="0">
                                     </div>
-                                {% endif %}
-                            </a>
-                            
-                            <div class="card-body d-flex flex-column">
-                                <h6 class="card-title fw-bold text-truncate" title="{{ livre.titre }}">
-                                    <a href="{{ path('app_book_show', {id: livre.id}) }}" class="text-dark text-decoration-none">
-                                        {{ livre.titre }}
-                                    </a>
-                                </h6>
-                                
-                                <p class="card-text text-muted small mb-2">
-                                    {{ ux_icon('tabler:user') }}
-                                    {% if livre.auteurs|length > 0 %}
-                                        {{ livre.auteurs[0].prenom }} {{ livre.auteurs[0].nom }}
-                                        {% if livre.auteurs|length > 1 %}
-                                            <small class="text-muted">+{{ livre.auteurs|length - 1 }}</small>
-                                        {% endif %}
-                                    {% else %}
-                                        <em>Auteur inconnu</em>
-                                    {% endif %}
-                                </p>
-
-                                <p class="card-text text-muted small mb-2">
-                                    {{ ux_icon('tabler:building') }}
-                                    {{ livre.editeur.nomEditeur }}
-                                </p>
-
-                                <div class="mt-auto">
-                                    <hr class="my-2">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="h6 mb-0 text-primary fw-bold">{{ livre.prix }} €</span>
-                                        <span class="badge bg-{{ livre.stock > 0 ? 'success' : 'danger' }}">
-                                            {{ livre.stock > 0 ? 'Stock: ' ~ livre.stock : 'Rupture' }}
-                                        </span>
+                                    <div class="col-6">
+                                        <input type="number" class="form-control" name="prix_max"
+                                               value="{{ filtres.prix_max }}"
+                                               placeholder="Max €" step="0.01" min="0">
                                     </div>
-                                    <a href="{{ path('app_book_show', {id: livre.id}) }}" 
-                                       class="btn btn-sm btn-outline-primary w-100">
-                                        {{ ux_icon('tabler:eye') }} Voir détails
-                                    </a>
                                 </div>
                             </div>
+
+                            {# Hidden sort field #}
+                            <input type="hidden" name="tri" value="{{ filtres.tri }}">
+
+                            {# Filter Buttons #}
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-check me-2"></i> Appliquer les filtres
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {# ===== Main Content - Book Grid ===== #}
+            <div class="col-lg-9 col-md-8">
+                {# Active Filters Tags #}
+                {% if filtres.categorie or filtres.editeur or filtres.prix_min or filtres.prix_max or filtres.search %}
+                <div class="mb-4">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <span class="text-muted me-2"><i class="fas fa-filter me-1"></i> Filtres actifs:</span>
+
+                        {% if filtres.search %}
+                            <span class="filter-tag">
+                                <i class="fas fa-search me-1"></i> "{{ filtres.search }}"
+                                <a href="{{ path('app_catalogue', {categorie: filtres.categorie, editeur: filtres.editeur, prix_min: filtres.prix_min, prix_max: filtres.prix_max, tri: filtres.tri}) }}"
+                                   class="remove-filter ms-2">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </span>
+                        {% endif %}
+
+                        {% if categorieSelectionnee %}
+                            <span class="filter-tag">
+                                <i class="fas fa-tag me-1"></i> {{ categorieSelectionnee.libelle }}
+                                <a href="{{ path('app_catalogue', {editeur: filtres.editeur, prix_min: filtres.prix_min, prix_max: filtres.prix_max, search: filtres.search, tri: filtres.tri}) }}"
+                                   class="remove-filter ms-2">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </span>
+                        {% endif %}
+
+                        {% if editeurSelectionne %}
+                            <span class="filter-tag">
+                                <i class="fas fa-building me-1"></i> {{ editeurSelectionne.nomEditeur }}
+                                <a href="{{ path('app_catalogue', {categorie: filtres.categorie, prix_min: filtres.prix_min, prix_max: filtres.prix_max, search: filtres.search, tri: filtres.tri}) }}"
+                                   class="remove-filter ms-2">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </span>
+                        {% endif %}
+
+                        {% if filtres.prix_min %}
+                            <span class="filter-tag" style="background: #ecfdf5; color: #047857;">
+                                <i class="fas fa-euro-sign me-1"></i> Min: {{ filtres.prix_min }}€
+                                <a href="{{ path('app_catalogue', {categorie: filtres.categorie, editeur: filtres.editeur, prix_max: filtres.prix_max, search: filtres.search, tri: filtres.tri}) }}"
+                                   class="remove-filter ms-2">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </span>
+                        {% endif %}
+
+                        {% if filtres.prix_max %}
+                            <span class="filter-tag" style="background: #ecfdf5; color: #047857;">
+                                <i class="fas fa-euro-sign me-1"></i> Max: {{ filtres.prix_max }}€
+                                <a href="{{ path('app_catalogue', {categorie: filtres.categorie, editeur: filtres.editeur, prix_min: filtres.prix_min, search: filtres.search, tri: filtres.tri}) }}"
+                                   class="remove-filter ms-2">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </span>
+                        {% endif %}
+
+                        <a href="{{ path('app_catalogue') }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i> Tout effacer
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                {# Toolbar - Results count and sorting #}
+                <div class="card mb-4" style="border-radius: 0.75rem;">
+                    <div class="card-body py-3">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <div>
+                                <span class="fw-semibold">{{ total }}</span>
+                                <span class="text-muted">résultat{{ total > 1 ? 's' : '' }}</span>
+                            </div>
+                            <form method="get" action="{{ path('app_catalogue') }}" class="d-flex align-items-center gap-2">
+                                {# Preserve filters #}
+                                {% if filtres.categorie %}<input type="hidden" name="categorie" value="{{ filtres.categorie }}">{% endif %}
+                                {% if filtres.editeur %}<input type="hidden" name="editeur" value="{{ filtres.editeur }}">{% endif %}
+                                {% if filtres.prix_min %}<input type="hidden" name="prix_min" value="{{ filtres.prix_min }}">{% endif %}
+                                {% if filtres.prix_max %}<input type="hidden" name="prix_max" value="{{ filtres.prix_max }}">{% endif %}
+                                {% if filtres.search %}<input type="hidden" name="search" value="{{ filtres.search }}">{% endif %}
+
+                                <label class="text-muted me-2">
+                                    <i class="fas fa-sort me-1"></i> Trier par:
+                                </label>
+                                <select name="tri" class="form-select form-select-sm" style="width: auto;"
+                                        onchange="this.form.submit()">
+                                    <option value="newest" {% if filtres.tri == 'newest' %}selected{% endif %}>
+                                        Nouveautés
+                                    </option>
+                                    <option value="price_asc" {% if filtres.tri == 'price_asc' %}selected{% endif %}>
+                                        Prix croissant
+                                    </option>
+                                    <option value="price_desc" {% if filtres.tri == 'price_desc' %}selected{% endif %}>
+                                        Prix décroissant
+                                    </option>
+                                    <option value="title" {% if filtres.tri == 'title' %}selected{% endif %}>
+                                        Alphabétique
+                                    </option>
+                                </select>
+                            </form>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
 
-                {# Pagination #}
-                {% if pages > 1 %}
-                <nav aria-label="Pagination" class="mt-5">
-                    <ul class="pagination justify-content-center">
-                        {# Bouton Précédent #}
-                        {% if currentPage > 1 %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ path('app_catalogue', filtres|merge({page: currentPage - 1})) }}">
-                                    Précédent
-                                </a>
-                            </li>
-                        {% else %}
-                            <li class="page-item disabled">
-                                <span class="page-link">Précédent</span>
-                            </li>
-                        {% endif %}
+                {# Book Grid #}
+                {% if livres|length > 0 %}
+                    <div class="row g-4">
+                        {% for livre in livres %}
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                            <div class="card book-card card-hover h-100">
+                                <div class="card-img-container">
+                                    <a href="{{ path('app_book_show', {id: livre.id}) }}">
+                                        {% if livre.imageCouverture %}
+                                            <img src="{{ asset('uploads/livres/' ~ livre.imageCouverture) }}"
+                                                 class="card-img-top"
+                                                 alt="{{ livre.titre }}"
+                                                 loading="lazy">
+                                        {% else %}
+                                            <div class="card-img-placeholder">
+                                                <i class="fas fa-book"></i>
+                                            </div>
+                                        {% endif %}
+                                    </a>
+                                </div>
 
-                        {# Numéros de pages #}
-                        {% set startPage = max(1, currentPage - 2) %}
-                        {% set endPage = min(pages, currentPage + 2) %}
+                                <div class="card-body">
+                                    <h6 class="book-title">
+                                        <a href="{{ path('app_book_show', {id: livre.id}) }}"
+                                           class="text-decoration-none text-dark">
+                                            {{ livre.titre }}
+                                        </a>
+                                    </h6>
 
-                        {% if startPage > 1 %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ path('app_catalogue', filtres|merge({page: 1})) }}">1</a>
-                            </li>
-                            {% if startPage > 2 %}
-                                <li class="page-item disabled"><span class="page-link">...</span></li>
-                            {% endif %}
-                        {% endif %}
+                                    <p class="book-author mb-2">
+                                        <i class="fas fa-feather-alt me-1 small"></i>
+                                        {% if livre.auteurs|length > 0 %}
+                                            {{ livre.auteurs[0].prenom }} {{ livre.auteurs[0].nom }}
+                                            {% if livre.auteurs|length > 1 %}
+                                                <span class="text-muted">+{{ livre.auteurs|length - 1 }}</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <em>Auteur inconnu</em>
+                                        {% endif %}
+                                    </p>
 
-                        {% for page in startPage..endPage %}
-                            <li class="page-item {% if page == currentPage %}active{% endif %}">
-                                <a class="page-link" href="{{ path('app_catalogue', filtres|merge({page: page})) }}">
-                                    {{ page }}
-                                </a>
-                            </li>
+                                    <p class="small text-muted mb-0">
+                                        <i class="fas fa-building me-1"></i>
+                                        {{ livre.editeur.nomEditeur }}
+                                    </p>
+
+                                    <div class="book-price-section">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="book-price">{{ livre.prix|number_format(2, ',', ' ') }} €</span>
+                                            {% if livre.stock > 10 %}
+                                                <span class="stock-badge in-stock">En stock</span>
+                                            {% elseif livre.stock > 0 %}
+                                                <span class="stock-badge low-stock">{{ livre.stock }} restant(s)</span>
+                                            {% else %}
+                                                <span class="stock-badge out-of-stock">Rupture</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ path('app_book_show', {id: livre.id}) }}"
+                                               class="btn btn-outline-primary btn-sm flex-grow-1">
+                                                <i class="fas fa-eye me-1"></i> Détails
+                                            </a>
+                                            {% if livre.stock > 0 %}
+                                                {% if is_granted('ROLE_ABONNE') %}
+                                                    <form action="{{ path('app_cart_add', {id: livre.id}) }}" method="post" class="d-inline">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('cart_add' ~ livre.id) }}">
+                                                        <input type="hidden" name="quantity" value="1">
+                                                        <button type="submit" class="btn btn-primary btn-sm" title="Ajouter au panier">
+                                                            <i class="fas fa-cart-plus"></i>
+                                                        </button>
+                                                    </form>
+                                                {% else %}
+                                                    <a href="{{ path('app_login') }}" class="btn btn-secondary btn-sm" title="Connectez-vous pour acheter">
+                                                        <i class="fas fa-cart-plus"></i>
+                                                    </a>
+                                                {% endif %}
+                                            {% else %}
+                                                <button class="btn btn-secondary btn-sm" disabled title="Rupture de stock">
+                                                    <i class="fas fa-cart-plus"></i>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         {% endfor %}
+                    </div>
 
-                        {% if endPage < pages %}
-                            {% if endPage < pages - 1 %}
-                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {# Pagination #}
+                    {% if pages > 1 %}
+                    <nav aria-label="Pagination" class="mt-5">
+                        <ul class="pagination justify-content-center">
+                            {# Previous Button #}
+                            {% if currentPage > 1 %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ path('app_catalogue', filtres|merge({page: currentPage - 1})) }}">
+                                        <i class="fas fa-chevron-left me-1"></i> Précédent
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="fas fa-chevron-left me-1"></i> Précédent</span>
+                                </li>
                             {% endif %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ path('app_catalogue', filtres|merge({page: pages})) }}">{{ pages }}</a>
-                            </li>
-                        {% endif %}
 
-                        {# Bouton Suivant #}
-                        {% if currentPage < pages %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ path('app_catalogue', filtres|merge({page: currentPage + 1})) }}">
-                                    Suivant
-                                </a>
-                            </li>
-                        {% else %}
-                            <li class="page-item disabled">
-                                <span class="page-link">Suivant</span>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
+                            {# Page Numbers #}
+                            {% set startPage = max(1, currentPage - 2) %}
+                            {% set endPage = min(pages, currentPage + 2) %}
+
+                            {% if startPage > 1 %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ path('app_catalogue', filtres|merge({page: 1})) }}">1</a>
+                                </li>
+                                {% if startPage > 2 %}
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                {% endif %}
+                            {% endif %}
+
+                            {% for page in startPage..endPage %}
+                                <li class="page-item {% if page == currentPage %}active{% endif %}">
+                                    <a class="page-link" href="{{ path('app_catalogue', filtres|merge({page: page})) }}">
+                                        {{ page }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+
+                            {% if endPage < pages %}
+                                {% if endPage < pages - 1 %}
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                {% endif %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ path('app_catalogue', filtres|merge({page: pages})) }}">{{ pages }}</a>
+                                </li>
+                            {% endif %}
+
+                            {# Next Button #}
+                            {% if currentPage < pages %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ path('app_catalogue', filtres|merge({page: currentPage + 1})) }}">
+                                        Suivant <i class="fas fa-chevron-right ms-1"></i>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">Suivant <i class="fas fa-chevron-right ms-1"></i></span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                {% else %}
+                    {# No Results #}
+                    <div class="card">
+                        <div class="card-body text-center py-5">
+                            <div class="mb-4" style="font-size: 4rem; opacity: 0.3;">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h4 class="text-muted">Aucun livre trouvé</h4>
+                            <p class="text-muted mb-4">
+                                Aucun livre ne correspond à vos critères de recherche.
+                            </p>
+                            <a href="{{ path('app_catalogue') }}" class="btn btn-primary">
+                                <i class="fas fa-redo-alt me-2"></i> Réinitialiser les filtres
+                            </a>
+                        </div>
+                    </div>
                 {% endif %}
-            {% else %}
-                <div class="alert alert-info text-center">
-                    {{ ux_icon('tabler:info-circle') }} Aucun livre ne correspond à vos critères de recherche.
-                    <br>
-                    <a href="{{ path('app_catalogue') }}" class="btn btn-sm btn-primary mt-2">
-                        Voir tous les livres
-                    </a>
-                </div>
-            {% endif %}
+            </div>
         </div>
     </div>
-</div>
-
-<style>
-.hover-lift {
-    transition: all 0.3s ease;
-}
-.hover-lift:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.15) !important;
-}
-.sticky-top {
-    position: sticky;
-}
-</style>
+</section>
 {% endblock %}

@@ -17,9 +17,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
 /**
  * Contrôleur CRUD pour la gestion des livres dans l'administration
  */
+#[IsGranted('ROLE_AGENT')]
 class LivreCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
@@ -47,7 +50,11 @@ class LivreCrudController extends AbstractCrudController
 
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->add(Crud::PAGE_INDEX, $viewDescription);
+            ->add(Crud::PAGE_INDEX, $viewDescription)
+            ->setPermission(Action::NEW, 'ROLE_AGENT')
+            ->setPermission(Action::EDIT, 'ROLE_AGENT')
+            ->setPermission(Action::DELETE, 'ROLE_ADMIN')
+            ->setPermission(Action::DETAIL, 'ROLE_AGENT');
     }
 
     public function configureFields(string $pageName): iterable
@@ -99,12 +106,12 @@ class LivreCrudController extends AbstractCrudController
                             <div class="modal fade" id="%s" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-lg modal-dialog-scrollable">
                                     <div class="modal-content">
-                                        <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%); color: white;">
+                                        <div class="modal-header">
                                             <h5 class="modal-title"><i class="fa fa-book"></i> %s</h5>
                                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <div style="line-height: 1.8;">%s</div>
+                                            <div>%s</div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
@@ -123,7 +130,8 @@ class LivreCrudController extends AbstractCrudController
                     ->setCurrency('EUR')
                     ->setLabel('Prix'),
                 IntegerField::new('stock')
-                    ->setLabel('Stock'),
+                    ->setLabel('Stock')
+                    ->setTemplatePath('admin/field/stock_badge.html.twig'),
                 IntegerField::new('nbPages')
                     ->setLabel('Pages'),
                 TextField::new('langue')

@@ -20,13 +20,23 @@ class CatalogueController extends AbstractController
         EditeurRepository $editeurRepository
     ): Response {
         // Récupérer les paramètres de filtrage et tri
-        $categorieId = $request->query->getInt('categorie', 0) ?: null;
-        $editeurId = $request->query->getInt('editeur', 0) ?: null;
-        $prixMin = $request->query->get('prix_min') ? (float) $request->query->get('prix_min') : null;
-        $prixMax = $request->query->get('prix_max') ? (float) $request->query->get('prix_max') : null;
+        $categorieId = $request->query->get('categorie');
+        $categorieId = is_numeric($categorieId) ? (int) $categorieId : null;
+
+        $editeurId = $request->query->get('editeur');
+        $editeurId = is_numeric($editeurId) ? (int) $editeurId : null;
+
+        $prixMin = $request->query->get('prix_min');
+        $prixMin = is_numeric($prixMin) ? (float) $prixMin : null;
+
+        $prixMax = $request->query->get('prix_max');
+        $prixMax = is_numeric($prixMax) ? (float) $prixMax : null;
+
         $search = $request->query->get('search', '');
         $orderBy = $request->query->get('tri', 'newest'); // newest, price_asc, price_desc, title
-        $page = max(1, $request->query->getInt('page', 1));
+        
+        $page = $request->query->get('page', 1);
+        $page = is_numeric($page) ? max(1, (int) $page) : 1;
 
         // Récupérer les livres avec filtres et pagination
         $result = $livreRepository->findWithFiltersAndPagination(

@@ -15,4 +15,29 @@ class CommandeRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Commande::class);
     }
+    /**
+     * Calcule le revenu total des commandes validées
+     */
+    public function countTotalRevenue(): float
+    {
+        return (float) $this->createQueryBuilder('c')
+            ->select('SUM(c.montantTotal)')
+            ->where('c.statut != :statut')
+            ->setParameter('statut', 'ANNULEE')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Récupère les dernières commandes
+     * @return Commande[]
+     */
+    public function findRecentOrders(int $limit = 5): array
+    {
+        return $this->createQueryBuilder('c')
+            ->orderBy('c.dateCommande', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

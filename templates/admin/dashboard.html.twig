@@ -1,116 +1,202 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
+{% block head_stylesheets %}
+{{ parent() }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {# Styles moved to assets/styles/admin.css #}
+{% endblock %}
+
 {% block page_title %}Dashboard MyBookstore{% endblock %}
 
 {% block page_content %}
-<div class="row">
-    <div class="col-md-12 mb-4">
-        <h2 class="mb-4">
-            {{ ux_icon('tabler:chart-line') }} Statistiques principales
-        </h2>
-    </div>
-</div>
-
-{# Cartes de statistiques #}
-<div class="row">
-    <div class="col-md-3 mb-4">
-        <div class="card border-0 shadow-sm" style="border-left: 4px solid #3498db !important;">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted text-uppercase small mb-1">📚 Livres</h6>
-                        <h2 class="mb-0 text-primary">{{ stats.total_livres }}</h2>
-                    </div>
-                    <div>
-                        {{ ux_icon('tabler:book', {style: 'font-size: 3rem; opacity: 0.25;', class: 'text-primary'}) }}
-                    </div>
-                </div>
-            </div>
+<div class="dashboard-welcome">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2>
+                {{ ux_icon('tabler:book', {class: 'text-warning me-2'}) }}
+                Tableau de bord
+            </h2>
+            <p class="mb-0 opacity-75">Bienvenue dans l'administration de MyBookstore</p>
         </div>
-    </div>
-
-    <div class="col-md-3 mb-4">
-        <div class="card border-0 shadow-sm" style="border-left: 4px solid #2ecc71 !important;">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted text-uppercase small mb-1">🛒 Commandes</h6>
-                        <h2 class="mb-0 text-success">{{ stats.total_commandes }}</h2>
-                    </div>
-                    <div>
-                        {{ ux_icon('tabler:shopping-cart', {style: 'font-size: 3rem; opacity: 0.25;', class: 'text-success'}) }}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3 mb-4">
-        <div class="card border-0 shadow-sm" style="border-left: 4px solid #9b59b6 !important;">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted text-uppercase small mb-1">👥 Utilisateurs</h6>
-                        <h2 class="mb-0 text-purple">{{ stats.total_utilisateurs }}</h2>
-                    </div>
-                    <div>
-                        {{ ux_icon('tabler:users', {style: 'font-size: 3rem; opacity: 0.25;', class: 'text-purple'}) }}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3 mb-4">
-        <div class="card border-0 shadow-sm" style="border-left: 4px solid #f39c12 !important;">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted text-uppercase small mb-1">⏳ En attente</h6>
-                        <h2 class="mb-0 text-warning">{{ stats.commandes_en_attente }}</h2>
-                    </div>
-                    <div>
-                        {{ ux_icon('tabler:clock', {style: 'font-size: 3rem; opacity: 0.25;', class: 'text-warning'}) }}
-                    </div>
-                </div>
-            </div>
+        <div class="d-none d-md-block">
+            {{ ux_icon('tabler:chart-line', {class: 'text-white opacity-25', style: 'font-size: 4rem;'}) }}
         </div>
     </div>
 </div>
 
-<div class="row mt-4">
-    <div class="col-md-12">
+{# Stock Alert Banner #}
+{% if stats.livres_low_stock > 0 %}
+<div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+    {{ ux_icon('tabler:alert-triangle', {class: 'me-2 fs-4'}) }}
+    <div class="flex-grow-1">
+        <strong>Alerte Stock !</strong> Il y a <strong>{{ stats.livres_low_stock }}</strong> livre(s) en rupture de stock imminente.
+    </div>
+</div>
+{% endif %}
+
+{# Bootstrap-native Dashboard Layout #}
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted small text-uppercase fw-bold mb-1">Chiffre d'affaires</div>
+                        <div class="h3 mb-0">{{ stats.ca_total|format_currency('EUR') }}</div>
+                    </div>
+                    <div class="p-2 bg-primary bg-opacity-10 rounded text-primary">
+                        {{ ux_icon('tabler:currency-euro', {class: 'fs-3'}) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted small text-uppercase fw-bold mb-1">Commandes</div>
+                        <div class="h3 mb-0">{{ stats.total_commandes }}</div>
+                        {% if stats.commandes_en_attente > 0 %}
+                            <small class="text-warning fw-bold">{{ stats.commandes_en_attente }} en attente</small>
+                        {% endif %}
+                    </div>
+                    <div class="p-2 bg-success bg-opacity-10 rounded text-success">
+                        {{ ux_icon('tabler:shopping-cart', {class: 'fs-3'}) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted small text-uppercase fw-bold mb-1">Utilisateurs</div>
+                        <div class="h3 mb-0">{{ stats.total_utilisateurs }}</div>
+                    </div>
+                    <div class="p-2 bg-info bg-opacity-10 rounded text-info">
+                        {{ ux_icon('tabler:users', {class: 'fs-3'}) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted small text-uppercase fw-bold mb-1">Livres</div>
+                        <div class="h3 mb-0">{{ stats.total_livres }}</div>
+                    </div>
+                    <div class="p-2 bg-warning bg-opacity-10 rounded text-warning">
+                        {{ ux_icon('tabler:book', {class: 'fs-3'}) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {# Recent Orders #}
+    <div class="col-xl-8 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ ux_icon('tabler:receipt', {class: 'me-2 text-muted'}) }} Commandes Récentes</h5>
+                <a href="{{ path('admin_dashboard', {crudAction: 'index', crudControllerFqcn: 'App\\Controller\\Admin\\CommandeCrudController'}) }}" class="btn btn-sm btn-light">Tout voir</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Commande</th>
+                            <th>Client</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                            <th class="text-end pe-4">Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for commande in recentOrders %}
+                        <tr>
+                            <td class="ps-4 fw-bold">#{{ commande.id }}</td>
+                            <td>{{ commande.user.prenom }} {{ commande.user.nom }}</td>
+                            <td>{{ commande.dateCommande|date('d/m/Y') }}</td>
+                            <td>
+                                {% set statusInfo = {
+                                    'EN_ATTENTE': 'warning',
+                                    'LIVREE': 'success',
+                                    'ANNULEE': 'danger'
+                                } %}
+                                {% set badgeColor = statusInfo[commande.statut|upper] ?? 'secondary' %}
+                                <span class="badge bg-{{ badgeColor }} bg-opacity-10 text-{{ badgeColor }}">
+                                    {{ commande.statut|capitalize }}
+                                </span>
+                            </td>
+                            <td class="text-end pe-4 fw-bold">{{ commande.montantTotal|format_currency('EUR') }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" class="text-center py-4">Aucune commande</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {# Top Sellers #}
+    <div class="col-xl-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0">{{ ux_icon('tabler:trophy', {class: 'me-2 text-warning'}) }} Meilleures Ventes</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                {% for item in bestSellers %}
+                    <div class="list-group-item d-flex align-items-center py-3 px-4">
+                        <div class="me-3 fw-bold text-muted h4 mb-0 opacity-50">#{{ loop.index }}</div>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold text-truncate" style="max-width: 180px;">{{ item.livre.titre }}</div>
+                            <small class="text-muted">{{ item.livre.auteurs|first.nom|default('-') }}</small>
+                        </div>
+                        <div class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">
+                            {{ item.totalVendu }} ventes
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Quick Actions #}
+<div class="row">
+    <div class="col-12">
         <div class="card border-0 shadow-sm">
-            <div class="card-header bg-light">
-                <h5 class="mb-0">
-                    {{ ux_icon('tabler:info-circle') }} Bienvenue dans l'administration MyBookstore
-                </h5>
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0">{{ ux_icon('tabler:bolt', {class: 'me-2 text-warning'}) }} Actions Rapides</h5>
             </div>
-            <div class="card-body">
-                <p class="mb-3">
-                    Utilisez le menu de navigation à gauche pour gérer votre librairie en ligne.
-                </p>
-                
-                <div class="alert alert-info mb-0">
-                    <strong>{{ ux_icon('tabler:bulb') }} Astuce :</strong>
-                    {% if stats.commandes_en_attente > 0 %}
-                        Vous avez <strong>{{ stats.commandes_en_attente }}</strong> commande(s) en attente de traitement.
-                    {% else %}
-                        Toutes les commandes ont été traitées ! 🎉
-                    {% endif %}
+            <div class="card-body p-4">
+                <div class="d-flex flex-wrap gap-3">
+                     <a href="{{ ea_url().setController('App\\Controller\\Admin\\LivreCrudController').setAction('new') }}" class="btn btn-outline-primary">
+                        {{ ux_icon('tabler:plus') }} Nouveau Livre
+                     </a>
+                     <a href="{{ ea_url().setController('App\\Controller\\Admin\\AuteurCrudController').setAction('new') }}" class="btn btn-outline-secondary">
+                        {{ ux_icon('tabler:user-plus') }} Nouvel Auteur
+                     </a>
+                     <a href="{{ path('app_home') }}" target="_blank" class="btn btn-light">
+                        {{ ux_icon('tabler:external-link') }} Voir le site
+                     </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    .text-purple {
-        color: #9b59b6 !important;
-    }
-    .opacity-25 {
-        opacity: 0.25 !important;
-    }
-</style>
 {% endblock %}
-

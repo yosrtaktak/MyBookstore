@@ -1,185 +1,283 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil - MyBookstore{% endblock %}
+{% block title %}Accueil - MyBookstore | Votre Librairie en Ligne{% endblock %}
 
 {% block content %}
-{# Hero Section #}
-<div class="py-5 bg-primary text-white">
+{# ===== Hero Section ===== #}
+<section class="hero-section">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1 class="display-4 fw-bold">Bienvenue chez MyBookstore</h1>
-                <p class="lead">Votre librairie en ligne pour découvrir des milliers de livres passionnants. Trouvez votre prochaine lecture parmi notre vaste sélection.</p>
-                <div class="d-flex gap-2 mt-4">
+            <div class="col-lg-7 hero-content">
+                <h1 class="hero-title animate-fadeInUp">
+                    Découvrez l'univers<br>
+                    <span style="color: #fbbf24;">des livres</span>
+                </h1>
+                <p class="hero-subtitle animate-fadeInUp" style="animation-delay: 0.1s;">
+                    Explorez notre collection de milliers de livres soigneusement sélectionnés.
+                    Romans, sciences, histoire, jeunesse - trouvez votre prochaine aventure littéraire.
+                </p>
+                <div class="d-flex flex-wrap gap-3 animate-fadeInUp" style="animation-delay: 0.2s;">
                     <a href="{{ path('app_catalogue') }}" class="btn btn-light btn-lg">
-                        {{ ux_icon('tabler:book-2') }} Découvrir le catalogue
+                        <i class="fas fa-book-open me-2"></i> Explorer le Catalogue
                     </a>
                     {% if not app.user %}
                         <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-lg">
-                            {{ ux_icon('tabler:user-plus') }} S'inscrire
+                            <i class="fas fa-user-plus me-2"></i> Créer un Compte
                         </a>
                     {% endif %}
                 </div>
-            </div>
-            <div class="col-md-4 text-center">
-                <div style="font-size: 8rem;">📚</div>
-            </div>
-        </div>
-    </div>
-</div>
 
-{# Section des avantages #}
-<div class="container my-5">
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body text-center">
-                    {{ ux_icon('tabler:books', {style: 'font-size: 3rem; color: #007bff;'}) }}
-                    <h5 class="card-title mt-3 fw-bold">Vaste Sélection</h5>
-                    <p class="card-text text-muted">Des milliers de livres dans tous les genres : romans, sciences, histoire, jeunesse et plus encore.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body text-center">
-                    {{ ux_icon('tabler:truck-delivery', {style: 'font-size: 3rem; color: #007bff;'}) }}
-                    <h5 class="card-title mt-3 fw-bold">Livraison Rapide</h5>
-                    <p class="card-text text-muted">Recevez vos commandes rapidement et en toute sécurité partout en France.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body text-center">
-                    {{ ux_icon('tabler:headphones', {style: 'font-size: 3rem; color: #007bff;'}) }}
-                    <h5 class="card-title mt-3 fw-bold">Support Client</h5>
-                    <p class="card-text text-muted">Notre équipe est toujours disponible pour répondre à vos questions et vous assister.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{# Section Derniers Livres Ajoutés #}
-<div class="container my-5">
-    <div class="text-center mb-5">
-        <h2 class="display-5 fw-bold">✨ Derniers Ajouts</h2>
-        <p class="lead text-muted">Découvrez nos derniers livres ajoutés à la collection</p>
-    </div>
-
-    <div class="row g-4">
-        {% for livre in derniersLivres %}
-        <div class="col-md-6 col-lg-4 col-xl-3">
-            <div class="card h-100 shadow-sm hover-lift">
-                {% if livre.imageCouverture %}
-                    <img src="{{ asset('uploads/livres/' ~ livre.imageCouverture) }}" 
-                         class="card-img-top" 
-                         alt="{{ livre.titre }}"
-                         style="height: 350px; object-fit: cover;">
-                {% else %}
-                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
-                         style="height: 350px;">
-                        {{ ux_icon('tabler:book', {style: 'font-size: 5rem; opacity: 0.3;'}) }}
+                {# Quick Stats #}
+                <div class="row mt-5 pt-4 animate-fadeInUp" style="animation-delay: 0.3s;">
+                    <div class="col-4">
+                        <div class="text-center">
+                            <h3 class="mb-1" style="color: #fbbf24; font-weight: 700;">10K+</h3>
+                            <small class="text-white-50">Livres</small>
+                        </div>
                     </div>
-                {% endif %}
-                
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title fw-bold text-truncate" title="{{ livre.titre }}">{{ livre.titre }}</h5>
-                    
-                    <p class="card-text text-muted small mb-2">
-                        {{ ux_icon('tabler:user') }}
-                        {% if livre.auteurs|length > 0 %}
-                            {% for auteur in livre.auteurs %}
-                                {{ auteur.prenom }} {{ auteur.nom }}{% if not loop.last %}, {% endif %}
-                            {% endfor %}
-                        {% else %}
-                            <em>Auteur inconnu</em>
-                        {% endif %}
-                    </p>
+                    <div class="col-4">
+                        <div class="text-center">
+                            <h3 class="mb-1" style="color: #fbbf24; font-weight: 700;">500+</h3>
+                            <small class="text-white-50">Auteurs</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-center">
+                            <h3 class="mb-1" style="color: #fbbf24; font-weight: 700;">50+</h3>
+                            <small class="text-white-50">Catégories</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 hero-illustration d-none d-lg-flex">
+                <div class="hero-books-icon">📚</div>
+            </div>
+        </div>
+    </div>
+</section>
 
-                    <div class="mt-auto">
-                        <hr>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="h5 mb-0 text-primary fw-bold">{{ livre.prix }} €</span>
-                            <span class="badge bg-{{ livre.stock > 0 ? 'success' : 'danger' }}">
-                                {{ livre.stock > 0 ? 'En stock (' ~ livre.stock ~ ')' : 'Rupture' }}
+{# ===== Features Section ===== #}
+<section class="section section-light">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="card card-hover feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-book-open fa-2x"></i>
+                    </div>
+                    <h5 style="color: #1a202c;">Vaste Sélection</h5>
+                    <p style="color: #4a5568;">Des milliers de livres dans tous les genres : romans, sciences, histoire, jeunesse et bien plus encore.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card card-hover feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-shipping-fast fa-2x"></i>
+                    </div>
+                    <h5 style="color: #1a202c;">Livraison Rapide</h5>
+                    <p style="color: #4a5568;">Recevez vos commandes en 2-3 jours ouvrés. Livraison gratuite dès 30€ d'achat.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card card-hover feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset fa-2x"></i>
+                    </div>
+                    <h5 style="color: #1a202c;">Support Client</h5>
+                    <p style="color: #4a5568;">Notre équipe est disponible 6j/7 pour répondre à vos questions et vous accompagner.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ===== Latest Books Section ===== #}
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title centered">Dernières Nouveautés</h2>
+            <p class="section-subtitle mt-4">Découvrez les derniers livres ajoutés à notre collection</p>
+        </div>
+
+        {% if derniersLivres|length > 0 %}
+            <div class="row g-4">
+                {% for livre in derniersLivres %}
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card book-card card-hover">
+                        <div class="card-img-container">
+                            <a href="{{ path('app_book_show', {id: livre.id}) }}">
+                                {% if livre.imageCouverture %}
+                                    <img src="{{ asset('uploads/livres/' ~ livre.imageCouverture) }}"
+                                         class="card-img-top"
+                                         alt="{{ livre.titre }}"
+                                         loading="lazy">
+                                {% else %}
+                                    <div class="card-img-placeholder">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                {% endif %}
+                            </a>
+                            <span class="book-badge">
+                                <i class="fas fa-sparkles me-1"></i> Nouveau
                             </span>
                         </div>
-                        <a href="{{ path('app_book_show', {id: livre.id}) }}" 
-                           class="btn btn-outline-primary w-100">
-                            {{ ux_icon('tabler:eye') }} Voir détails
-                        </a>
+                        <div class="card-body">
+                            <h6 class="book-title">
+                                <a href="{{ path('app_book_show', {id: livre.id}) }}" class="text-decoration-none text-dark">
+                                    {{ livre.titre }}
+                                </a>
+                            </h6>
+                            <p class="book-author">
+                                <i class="fas fa-feather-alt me-1 small"></i>
+                                {% if livre.auteurs|length > 0 %}
+                                    {{ livre.auteurs[0].prenom }} {{ livre.auteurs[0].nom }}
+                                    {% if livre.auteurs|length > 1 %}
+                                        <span class="text-muted">+{{ livre.auteurs|length - 1 }}</span>
+                                    {% endif %}
+                                {% else %}
+                                    <em>Auteur inconnu</em>
+                                {% endif %}
+                            </p>
+                            <div class="book-price-section">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="book-price">{{ livre.prix|number_format(2, ',', ' ') }} €</span>
+                                    {% if livre.stock > 10 %}
+                                        <span class="stock-badge in-stock">En stock</span>
+                                    {% elseif livre.stock > 0 %}
+                                        <span class="stock-badge low-stock">{{ livre.stock }} restant(s)</span>
+                                    {% else %}
+                                        <span class="stock-badge out-of-stock">Rupture</span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ path('app_book_show', {id: livre.id}) }}"
+                                       class="btn btn-outline-primary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i> Détails
+                                    </a>
+                                    {% if livre.stock > 0 %}
+                                        {% if is_granted('ROLE_ABONNE') %}
+                                            <form action="{{ path('app_cart_add', {id: livre.id}) }}" method="post" class="d-inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('cart_add' ~ livre.id) }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn btn-primary btn-sm" title="Ajouter au panier">
+                                                    <i class="fas fa-cart-plus"></i>
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <a href="{{ path('app_login') }}" class="btn btn-secondary btn-sm" title="Connectez-vous pour acheter">
+                                                <i class="fas fa-cart-plus"></i>
+                                            </a>
+                                        {% endif %}
+                                    {% else %}
+                                        <button class="btn btn-secondary btn-sm" disabled title="Rupture de stock">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
-        </div>
+
+            <div class="text-center mt-5">
+                <a href="{{ path('app_catalogue') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-arrow-right me-2"></i> Voir tout le catalogue
+                </a>
+            </div>
         {% else %}
-        <div class="col-12">
-            <div class="alert alert-info text-center">
-                {{ ux_icon('tabler:info-circle') }} Aucun livre disponible pour le moment.
+            <div class="text-center py-5">
+                <div class="mb-4" style="font-size: 4rem; opacity: 0.3;">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h4 class="text-muted">Aucun livre disponible pour le moment</h4>
+                <p class="text-muted">Revenez bientôt pour découvrir nos nouveautés !</p>
             </div>
-        </div>
-        {% endfor %}
+        {% endif %}
     </div>
+</section>
 
-    {% if derniersLivres|length > 0 %}
-    <div class="text-center mt-5">
-        <a href="{{ path('app_catalogue') }}" class="btn btn-primary btn-lg">
-            {{ ux_icon('tabler:arrow-right') }} Voir tous les livres du catalogue
-        </a>
-    </div>
-    {% endif %}
-</div>
-
-{# Section Livres en Vedette #}
+{# ===== Featured Books Section ===== #}
 {% if livresVedette|length > 0 %}
-<div class="bg-light py-5">
+<section class="section section-dark">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold">🌟 Livres en Vedette</h2>
-            <p class="lead text-muted">Notre sélection de livres populaires et incontournables</p>
+        <div class="section-header">
+            <h2 class="section-title centered" style="color: white;">
+                <i class="fas fa-star me-2" style="color: #fbbf24;"></i>
+                Livres en Vedette
+            </h2>
+            <p class="section-subtitle mt-4" style="color: #bcccdc;">
+                Notre sélection de livres populaires et incontournables
+            </p>
         </div>
 
         <div class="row g-4">
             {% for livre in livresVedette %}
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 shadow hover-lift border-primary" style="border-width: 2px;">
-                    {% if livre.imageCouverture %}
-                        <img src="{{ asset('uploads/livres/' ~ livre.imageCouverture) }}" 
-                             class="card-img-top" 
-                             alt="{{ livre.titre }}"
-                             style="height: 300px; object-fit: cover;">
-                    {% else %}
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
-                             style="height: 300px;">
-                            {{ ux_icon('tabler:book', {style: 'font-size: 4rem; opacity: 0.3;'}) }}
-                        </div>
-                    {% endif %}
-                    
-                    <div class="card-body d-flex flex-column">
-                        <div class="position-absolute top-0 end-0 m-2">
-                            <span class="badge bg-warning text-dark">
-                                {{ ux_icon('tabler:star-filled') }} Vedette
-                            </span>
-                        </div>
-                        
-                        <h5 class="card-title fw-bold text-truncate" title="{{ livre.titre }}">{{ livre.titre }}</h5>
-                        
-                        <p class="card-text text-muted small">
+            <div class="col-lg-3 col-md-6">
+                <div class="card book-card card-hover" style="border: 2px solid #fbbf24;">
+                    <div class="card-img-container">
+                        <a href="{{ path('app_book_show', {id: livre.id}) }}">
+                            {% if livre.imageCouverture %}
+                                <img src="{{ asset('uploads/livres/' ~ livre.imageCouverture) }}"
+                                     class="card-img-top"
+                                     alt="{{ livre.titre }}"
+                                     loading="lazy">
+                            {% else %}
+                                <div class="card-img-placeholder">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                            {% endif %}
+                        </a>
+                        <span class="book-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                            <i class="fas fa-star me-1"></i> Vedette
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="book-title">
+                            <a href="{{ path('app_book_show', {id: livre.id}) }}" class="text-decoration-none text-dark">
+                                {{ livre.titre }}
+                            </a>
+                        </h6>
+                        <p class="book-author">
                             {% if livre.auteurs|length > 0 %}
                                 Par {{ livre.auteurs[0].prenom }} {{ livre.auteurs[0].nom }}
                             {% endif %}
                         </p>
-
-                        <div class="mt-auto">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="h5 mb-0 text-primary fw-bold">{{ livre.prix }} €</span>
+                        <div class="book-price-section">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="book-price">{{ livre.prix|number_format(2, ',', ' ') }} €</span>
+                                {% if livre.stock > 0 %}
+                                    <span class="stock-badge in-stock">En stock</span>
+                                {% else %}
+                                    <span class="stock-badge out-of-stock">Rupture</span>
+                                {% endif %}
                             </div>
-                            <a href="{{ path('app_book_show', {id: livre.id}) }}" 
-                               class="btn btn-primary w-100">
-                                {{ ux_icon('tabler:shopping-cart') }} Découvrir
-                            </a>
+                            <div class="d-flex gap-2">
+                                <a href="{{ path('app_book_show', {id: livre.id}) }}"
+                                   class="btn btn-outline-light btn-sm flex-grow-1">
+                                    <i class="fas fa-eye me-1"></i> Détails
+                                </a>
+                                {% if livre.stock > 0 %}
+                                    {% if is_granted('ROLE_ABONNE') %}
+                                        <form action="{{ path('app_cart_add', {id: livre.id}) }}" method="post" class="d-inline">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('cart_add' ~ livre.id) }}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="btn btn-warning btn-sm" title="Ajouter au panier">
+                                                <i class="fas fa-cart-plus"></i>
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <a href="{{ path('app_login') }}" class="btn btn-secondary btn-sm" title="Connectez-vous pour acheter">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <button class="btn btn-secondary btn-sm" disabled title="Rupture de stock">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -187,16 +285,84 @@
             {% endfor %}
         </div>
     </div>
-</div>
+</section>
 {% endif %}
 
-<style>
-.hover-lift {
-    transition: all 0.3s ease;
-}
-.hover-lift:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important;
-}
-</style>
+{# ===== Newsletter / CTA Section ===== #}
+<section class="section section-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card" style="background: linear-gradient(135deg, #f0f4f8, #d9e2ec); border: none;">
+                    <div class="card-body p-5 text-center">
+                        <div class="mb-4">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                                  style="width: 80px; height: 80px; background: linear-gradient(135deg, #334e68, #243b53);">
+                                <i class="fas fa-envelope-open-text fa-2x text-white"></i>
+                            </span>
+                        </div>
+                        <h3 style="font-family: 'Playfair Display', serif;">Restez informé</h3>
+                        <p class="text-muted mb-4">
+                            Inscrivez-vous à notre newsletter pour recevoir nos dernières nouveautés
+                            et offres exclusives directement dans votre boîte mail.
+                        </p>
+                        <form class="row g-3 justify-content-center">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <input type="email" class="form-control form-control-lg"
+                                           placeholder="Votre adresse email..."
+                                           style="border-radius: 0.75rem 0 0 0.75rem;">
+                                    <button class="btn btn-primary btn-lg px-4" type="submit"
+                                            style="border-radius: 0 0.75rem 0.75rem 0;">
+                                        <i class="fas fa-paper-plane me-2"></i> S'abonner
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <small class="text-muted mt-3 d-block">
+                            <i class="fas fa-shield-alt me-1"></i>
+                            Nous respectons votre vie privée. Désabonnement possible à tout moment.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ===== Trust Badges Section ===== #}
+<section class="py-5" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-6 col-md-3">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="fas fa-truck fa-2x mb-3" style="color: #334e68;"></i>
+                    <h6 class="mb-1">Livraison Gratuite</h6>
+                    <small class="text-muted">Dès 30€ d'achat</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="fas fa-shield-alt fa-2x mb-3" style="color: #334e68;"></i>
+                    <h6 class="mb-1">Paiement Sécurisé</h6>
+                    <small class="text-muted">100% sécurisé</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="fas fa-undo fa-2x mb-3" style="color: #334e68;"></i>
+                    <h6 class="mb-1">Retour Gratuit</h6>
+                    <small class="text-muted">Sous 14 jours</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="fas fa-headset fa-2x mb-3" style="color: #334e68;"></i>
+                    <h6 class="mb-1">Support 6j/7</h6>
+                    <small class="text-muted">À votre écoute</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

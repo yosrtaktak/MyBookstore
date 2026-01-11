@@ -230,4 +230,52 @@ class LivreRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+    /**
+     * Compte les livres en rupture de stock imminent
+     */
+    public function countLowStock(int $threshold = 5): int
+    {
+        return $this->createQueryBuilder('l')
+            ->select('count(l.id)')
+            ->where('l.stock < :threshold')
+            ->setParameter('threshold', $threshold)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Trouve les livres en rupture de stock imminent
+     * @return Livre[]
+     */
+    public function findLowStock(int $threshold = 5, int $limit = 10): array
+    {
+        return $this->createQueryBuilder('l')
+            ->where('l.stock < :threshold')
+            ->setParameter('threshold', $threshold)
+            ->orderBy('l.stock', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Trouve les livres les plus vendus
+     * @return array [{livre: Livre, totalVendu: int, chiffreAffaire: float}]
+     */
+    public function findBestSellers(int $limit = 5): array
+    {
+        $results = $this->createQueryBuilder('l')
+            ->select('l as livre', 'SUM(lc.quantite) as totalVendu', 'SUM(lc.quantite * lc.prixUnitaire) as chiffreAffaire')
+            ->join('l.ligneCommandes', 'lc')
+            ->join('lc.commande', 'c')
+            ->where('c.statut != :statut') // Exclure les commandes annulées si nécessaire
+            ->setParameter('statut', 'ANNULEE')
+            ->groupBy('l.id')
+            ->orderBy('totalVendu', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+            
+        return $results;
+    }
 }

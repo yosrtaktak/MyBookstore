@@ -1,0 +1,13 @@
+{% set stock = field.value %}
+
+{% if stock is null %}
+    <span class="text-muted">-</span>
+{% elseif stock == 0 %}
+    <span class="badge bg-danger">Rupture</span>
+{% elseif stock < 5 %}
+    <span class="badge bg-warning text-dark">{{ stock }}</span>
+{% elseif stock < 10 %}
+    <span class="badge bg-info">{{ stock }}</span>
+{% else %}
+    <span class="badge bg-success">{{ stock }}</span>
+{% endif %}
