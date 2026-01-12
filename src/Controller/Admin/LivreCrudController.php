@@ -13,7 +13,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
@@ -170,15 +170,16 @@ class LivreCrudController extends AbstractCrudController
 
         // Description - différent selon la page
         if ($pageName === Crud::PAGE_DETAIL) {
-            $fields[] = TextEditorField::new('description')
-                ->setLabel('Description');
+            $fields[] = TextareaField::new('description')
+                ->setLabel('Description')
+                ->renderAsHtml();
         } else {
             // Formulaires NEW et EDIT
-            $fields[] = TextEditorField::new('description')
+            $fields[] = TextareaField::new('description')
                 ->setLabel('Description')
                 ->setRequired(false)
                 ->setColumns(12)
-                ->setHelp('Utilisez l\'éditeur pour formater le texte (gras, italique, listes, etc.)');
+                ->setHelp('Entrez une description du livre (texte simple)');
         }
 
         // Reste des champs

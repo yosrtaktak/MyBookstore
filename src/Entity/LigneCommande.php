@@ -30,6 +30,14 @@ class LigneCommande
 
     public function __toString(): string
     {
+        if ($this->livre) {
+            return sprintf(
+                '%s (x%d) - %s €',
+                $this->livre->getTitre(),
+                $this->quantite ?? 0,
+                number_format((float)$this->prixUnitaire * ($this->quantite ?? 0), 2, ',', ' ')
+            );
+        }
         return sprintf('Ligne #%d', $this->id ?? 0);
     }
 

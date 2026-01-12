@@ -98,22 +98,25 @@ class CommandeCrudController extends AbstractCrudController
                 TextField::new('user.email')
                     ->setLabel('Client'),
                 
-                ChoiceField::new('statut')
+                TextField::new('statut')
                     ->setLabel('Statut')
-                    ->setChoices([
-                        'En attente' => self::STATUT_EN_ATTENTE,
-                        'En cours' => self::STATUT_EN_COURS,
-                        'Expédiée' => self::STATUT_EXPEDIEE,
-                        'Livrée' => self::STATUT_LIVREE,
-                        'Annulée' => self::STATUT_ANNULEE,
-                    ])
-                    ->renderAsBadges([
-                        self::STATUT_EN_ATTENTE => 'warning',
-                        self::STATUT_EN_COURS => 'info',
-                        self::STATUT_EXPEDIEE => 'primary',
-                        self::STATUT_LIVREE => 'success',
-                        self::STATUT_ANNULEE => 'danger',
-                    ]),
+                    ->formatValue(function ($value, $entity) {
+                        $statusMap = [
+                            self::STATUT_EN_ATTENTE => ['label' => 'En attente', 'color' => 'warning'],
+                            self::STATUT_EN_COURS => ['label' => 'En cours', 'color' => 'info'],
+                            self::STATUT_EXPEDIEE => ['label' => 'Expédiée', 'color' => 'primary'],
+                            self::STATUT_LIVREE => ['label' => 'Livrée', 'color' => 'success'],
+                            self::STATUT_ANNULEE => ['label' => 'Annulée', 'color' => 'danger'],
+                        ];
+                        
+                        $status = $statusMap[$value] ?? ['label' => $value, 'color' => 'secondary'];
+                        return sprintf(
+                            '<span class="badge bg-%s bg-opacity-10 text-%s">%s</span>',
+                            $status['color'],
+                            $status['color'],
+                            $status['label']
+                        );
+                    }),
                 
                 MoneyField::new('montantTotal')
                     ->setCurrency('EUR')
